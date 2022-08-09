@@ -58,7 +58,7 @@ We will also show how to train with other common datasets.
 from datetime import datetime
 import json
 import logging
-import os
+
 from pprint import pformat
 
 import numpy as np
@@ -184,7 +184,7 @@ logging.info(f"Universal name for run: {universal_run_name}")
 
 We are now ready to load the dataset. We only have to introduce the path to the dataset. This path will be used to look for available preprocessed data and cached clustering results.
 """
-config.data_path = os.environ.get("DATASET_DIR", "/localdata/paperspace") + "/graph_datasets/"
+config.data_path = "graph_datasets/"
 
 """
 """
