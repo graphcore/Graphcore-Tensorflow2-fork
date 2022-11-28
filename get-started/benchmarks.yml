@@ -1,12 +1,13 @@
 ---
 # --- Train Cluster-GCN model ---
 train_options: &train_options
-  location: public_examples/gnn/cluster_gcn/tensorflow2/
+  env:
+    TF_POPLAR_FLAGS: '--executable_cache_path=/tmp/tf_cache/'
   data:
     throughput:
-      regexp: 'Mean throughput over real nodes \(no padding\) for training:\s*([\d\.]+)'
+      regexp: 'throughput: *(.*?) samples\/sec'
   output:
-    - [Nodes/s, 'throughput']
+    - [samples/sec, 'throughput']
 
 tf2_cluster_gcn_ppi_train_real_pod4:
   <<: *train_options
@@ -21,7 +22,7 @@ tf2_cluster_gcn_ppi_train_real_pod4:
       --executable-cache-path=/tmp/tf_cache/
     python3 run_cluster_gcn.py
       configs/train_ppi.json
-      --training.epochs 20
+      --training.epochs 50
       --training.replicas 4
       --training.epochs-per-execution 4
       --do-validation false
@@ -46,7 +47,7 @@ tf2_cluster_gcn_reddit_train_real_pod4:
       --executable-cache-path=/tmp/tf_cache/
     python3 run_cluster_gcn.py
       configs/train_reddit.json
-      --training.epochs 20
+      --training.epochs 50
       --training.replicas 4
       --training.epochs-per-execution 4
       --do-validation false
@@ -71,7 +72,7 @@ tf2_cluster_gcn_arxiv_train_real_pod4:
       --executable-cache-path=/tmp/tf_cache/
     python3 run_cluster_gcn.py
       configs/train_arxiv.json
-      --training.epochs 20
+      --training.epochs 50
       --training.replicas 4
       --training.epochs-per-execution 4
       --do-validation false
@@ -96,7 +97,7 @@ tf2_cluster_gcn_products_train_real_pod4:
       --executable-cache-path=/tmp/tf_cache/
     python3 run_cluster_gcn.py
       configs/train_products.json
-      --training.epochs 20
+      --training.epochs 50
       --training.replicas 4
       --training.epochs-per-execution 4
       --do-validation false
@@ -121,7 +122,7 @@ tf2_cluster_gcn_mag_train_real_pod4:
       --executable-cache-path=/tmp/tf_cache/
     python3 run_cluster_gcn.py
       configs/train_mag.json
-      --training.epochs 20
+      --training.epochs 50
       --training.replicas 4
       --training.epochs-per-execution 4
       --do-validation false
