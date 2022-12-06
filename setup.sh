@@ -51,7 +51,7 @@ symlink_public_resources $poplar_executables_source_dir $POPLAR_EXECUTABLE_CACHE
 # symlink mounted datasets
 for dataset in /datasets/*; do
     # don't symlink the poplar executables, that's handled above
-    test "$dataset" = "$poplar_executables_source_dir" && continue 
+    test "$dataset" = "$poplar_executables_source_dir" && continue
     # symlink the actual datasets
     symlink_public_resources $dataset $DATASET_DIR &
 done
@@ -59,3 +59,6 @@ done
 # Set framework specific variables
 export TF_POPLAR_FLAGS='--executable_cache_path='${POPLAR_EXECUTABLE_CACHE_DIR}''
 
+# Environment variables customised for OGB
+export OGB_DATASET_DIR="${DATASET_DIR}/ogb_lsc_pcqm4mv2/datasets"
+export OGB_CHECKPOINT_DIR="${CHECKPOINT_DIR}/ogb_lsc_pcqm4mv2/checkpoints"
