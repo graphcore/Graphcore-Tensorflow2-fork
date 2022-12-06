@@ -1,0 +1,7 @@
+# integrations:
+#   ogbn_arxiv:
+#     type: dataset
+#     ref: paperspace/dsn5wmo5xkgyqug:e7pc9wn
+#   poplar-executables-tf2:
+#     type: dataset
+#     ref: paperspace/dssv0xjgptlxoxk:7v019uu
