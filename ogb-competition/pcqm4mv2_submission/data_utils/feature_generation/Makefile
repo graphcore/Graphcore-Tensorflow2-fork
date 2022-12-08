@@ -5,6 +5,8 @@ all: path_algorithms.so
 
 path_algorithms.so:
 	cython -3 path_algorithms.pyx -o path_algorithms.c
+	ls /usr/local/lib/$(PY3)/dist-packages/numpy/core/include/**/
+	ls /usr/include/$(PY3)/**/
 	$(CC) path_algorithms.c \
 		-shared \
 		-fPIC \
