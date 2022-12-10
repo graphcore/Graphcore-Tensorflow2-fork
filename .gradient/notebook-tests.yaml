@@ -15,13 +15,13 @@ examples_repository_options: &examples_repository_options
     ref: v3.0.0
 
 Graphcore-Tensorflow2-README_first:
-  <<: *gradient_repository_options
+  # <<: *gradient_repository_options
   generated: true
   notebook:
     file: README_first.ipynb
 
 gnn-cluster-gcn-notebook:
-  <<: *gradient_repository_options
+  # <<: *gradient_repository_options
   location: gnn-cluster-gcn
   generated: true
   notebook:
@@ -29,7 +29,7 @@ gnn-cluster-gcn-notebook:
   requirements_file: requirements.txt
 
 ogb-training:
-  <<: *gradient_repository_options
+  # <<: *gradient_repository_options
   location: ogb-competition
   generated: true
   notebook:
@@ -37,7 +37,7 @@ ogb-training:
   requirements_file: requirements.txt
 
 ogb-inference:
-  <<: *gradient_repository_options
+  # <<: *gradient_repository_options
   location: ogb-competition
   generated: true
   notebook:
@@ -45,7 +45,7 @@ ogb-inference:
   requirements_file: requirements.txt
 
 keras-demo:
-  <<: *gradient_repository_options
+  # <<: *gradient_repository_options
   location: learning-TensorFlow2-on-IPU/keras
   generated: true
   notebook:
@@ -53,7 +53,7 @@ keras-demo:
 
 
 mnist-mnist:
-  <<: *gradient_repository_options
+  # <<: *gradient_repository_options
   location: learning-TensorFlow2-on-IPU/mnist
   generated: true
   notebook:
@@ -62,7 +62,7 @@ mnist-mnist:
 
 
 tensorboard-demo:
-  <<: *gradient_repository_options
+  # <<: *gradient_repository_options
   location: learning-TensorFlow2-on-IPU/tensorboard
   generated: true
   notebook:
