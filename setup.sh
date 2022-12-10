@@ -17,8 +17,12 @@ symlink-public-resources() {
     cd -
 }
 
-export NUM_AVAILABLE_IPU=4
-export GRAPHCORE_POD_TYPE="pod4"
+DETECTED_NUMBER_OF_IPUS="4"
+
+IPU_ARG=${1:-"${DETECTED_NUMBER_OF_IPUS}"}
+
+export NUM_AVAILABLE_IPU=${IPU_ARG}
+export GRAPHCORE_POD_TYPE="pod${IPU_ARG}"
 export POPLAR_EXECUTABLE_CACHE_DIR="/tmp/exe_cache"
 export DATASET_DIR="/tmp/dataset_cache"
 export CHECKPOINT_DIR="/tmp/checkpoints"
@@ -27,11 +31,6 @@ export CHECKPOINT_DIR="/tmp/checkpoints"
 # mounted public dataset directory (path in the container)
 # in the Paperspace environment this would be ="/datasets"
 export PUBLIC_DATASET_DIR="/datasets"
-# symlink exe_cache files
-symlink-public-resources "${PUBLIC_DATASET_DIR}/exe_cache" $POPLAR_EXECUTABLE_CACHE_DIR
-
-# symlink ogbn_arxiv dataset for cluster gcn notebook
-symlink-public-resources "${PUBLIC_DATASET_DIR}/datasets/ogbn_arxiv" "${DATASET_DIR}/ogbn_arxiv"
 
 export TF_POPLAR_FLAGS='--executable_cache_path='${POPLAR_EXECUTABLE_CACHE_DIR}''
 
@@ -40,14 +39,23 @@ export OGB_DATASET_DIR="${DATASET_DIR}/ogb_lsc_pcqm4mv2/datasets"
 export OGB_CHECKPOINT_DIR="${CHECKPOINT_DIR}/ogb_lsc_pcqm4mv2/checkpoints"
 export OGB_SUBMISSION_CODE="./pcqm4mv2_submission"
 
-# symlink OGB-specific folders
-symlink-public-resources "${PUBLIC_DATASET_DIR}/datasets/ogb_lsc_pcqm4mv2/datasets" "${OGB_DATASET_DIR}"
-symlink-public-resources "${PUBLIC_DATASET_DIR}/datasets/ogb_lsc_pcqm4mv2/checkpoints" "${OGB_CHECKPOINT_DIR}"
-
-prepare_ogb_notebooks(){
+make_ogb_custom_ops(){
     python -m pip install -r /notebooks/ogb-competition/requirements.txt
-    cd "/notebooks/ogb-competition/${OGB_SUBMISSION_CODE}" && make -C data_utils/feature_generation
-    cd "/notebooks/ogb-competition/${OGB_SUBMISSION_CODE}" && make -C static_ops
+    cd "/notebooks/ogb-competition/${OGB_SUBMISSION_CODE}"
+    make -C data_utils/feature_generation
+    make -C static_ops
+    cd -
 }
 
-prepare_ogb_notebooks
+prepare_tf2_datasets(){
+    # symlink exe_cache files
+    symlink-public-resources "${PUBLIC_DATASET_DIR}/exe_cache" $POPLAR_EXECUTABLE_CACHE_DIR
+    # symlink ogbn_arxiv dataset for cluster gcn notebook
+    symlink-public-resources "${PUBLIC_DATASET_DIR}/datasets/ogbn_arxiv" "${DATASET_DIR}/ogbn_arxiv"
+    # symlink OGB-specific folders
+    symlink-public-resources "${PUBLIC_DATASET_DIR}/datasets/ogb_lsc_pcqm4mv2/datasets" "${OGB_DATASET_DIR}"
+    symlink-public-resources "${PUBLIC_DATASET_DIR}/datasets/ogb_lsc_pcqm4mv2/checkpoints" "${OGB_CHECKPOINT_DIR}"
+    make_ogb_custom_ops
+}
+
+nohup prepare_datasets & tail -f nohup.out &
