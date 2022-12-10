@@ -26,7 +26,7 @@ export CHECKPOINT_DIR="/tmp/checkpoints"
 
 # mounted public dataset directory (path in the container)
 # in the Paperspace environment this would be ="/datasets"
-export PUBLIC_DATASET_DIR="/graphcore/public_caches"
+export PUBLIC_DATASET_DIR="/datasets"
 # symlink exe_cache files
 symlink-public-resources "${PUBLIC_DATASET_DIR}/exe_cache" $POPLAR_EXECUTABLE_CACHE_DIR
 
