@@ -1,28 +1,11 @@
-# Generated file from directory Graphcore-Tensorflow2 on Wed 12 Oct 2022 18:06:47 BST
-# By running 'generate-yaml.sh'.
-# There may be manual modifications in this file,
-# be careful when updating.
-
-# "options" is a magic string which declares an entry as not a benchmark
-gradient_repository_options: &gradient_repository_options
-  repository:
-    origin: https://github.com/graphcore/Graphcore-Tensorflow2-fork.git
-    ref: prepare-sdk-release-3.0
-
-examples_repository_options: &examples_repository_options
-  repository:
-    origin: https://github.com/graphcore/examples.git
-    ref: v3.0.0
 
 Graphcore-Tensorflow2-README_first:
-  # <<: *gradient_repository_options
   generated: true
   location: ../
   notebook:
     file: README_first.ipynb
 
 gnn-cluster-gcn-notebook:
-  # <<: *gradient_repository_options
   location: ../gnn-cluster-gcn
   generated: true
   notebook:
@@ -31,7 +14,6 @@ gnn-cluster-gcn-notebook:
   requirements_file: requirements.txt
 
 ogb-training:
-  # <<: *gradient_repository_options
   location: ../ogb-competition
   generated: true
   notebook:
@@ -40,7 +22,6 @@ ogb-training:
   requirements_file: requirements.txt
 
 ogb-inference:
-  # <<: *gradient_repository_options
   location: ../ogb-competition
   generated: true
   notebook:
@@ -49,7 +30,6 @@ ogb-inference:
   requirements_file: requirements.txt
 
 keras-demo:
-  # <<: *gradient_repository_options
   location: ../learning-TensorFlow2-on-IPU/keras
   generated: true
   notebook:
@@ -58,7 +38,6 @@ keras-demo:
 
 
 mnist-mnist:
-  # <<: *gradient_repository_options
   location: ../learning-TensorFlow2-on-IPU/mnist
   generated: true
   notebook:
@@ -68,7 +47,6 @@ mnist-mnist:
 
 
 tensorboard-demo:
-  # <<: *gradient_repository_options
   location: ../learning-TensorFlow2-on-IPU/tensorboard
   generated: true
   notebook:
@@ -76,7 +54,11 @@ tensorboard-demo:
     file: demo.ipynb
   requirements_file: requirements.txt
 
-
+# examples_repository_options: &examples_repository_options
+#   repository:
+#     origin: https://github.com/graphcore/examples.git
+#     ref: v3.0.0
+#
 # tf2_cluster_gcn_ppi_train_gen_pod4:
 #   <<: *examples_repository_options
 #   location: ../gnn/cluster_gcn/tensorflow2
