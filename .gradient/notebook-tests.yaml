@@ -1,0 +1,108 @@
+# Generated file from directory Graphcore-Tensorflow2 on Wed 12 Oct 2022 18:06:47 BST
+# By running 'generate-yaml.sh'.
+# There may be manual modifications in this file,
+# be careful when updating.
+
+# "options" is a magic string which declares an entry as not a benchmark
+gradient_repository_options: &gradient_repository_options
+  repository:
+    origin: https://github.com/graphcore/Graphcore-Tensorflow2-fork.git
+    ref: prepare-sdk-release-3.0
+
+examples_repository_options: &examples_repository_options
+  repository:
+    origin: https://github.com/graphcore/examples.git
+    ref: v3.0.0
+
+Graphcore-Tensorflow2-README_first:
+  # <<: *gradient_repository_options
+  generated: true
+  location: ../
+  notebook:
+    file: README_first.ipynb
+
+gnn-cluster-gcn-notebook:
+  # <<: *gradient_repository_options
+  location: ../gnn-cluster-gcn
+  generated: true
+  notebook:
+    file: run_cluster_gcn_notebook.ipynb
+  requirements_file: requirements.txt
+
+ogb-training:
+  # <<: *gradient_repository_options
+  location: ../ogb-competition
+  generated: true
+  notebook:
+    file: gps++_training.ipynb
+  requirements_file: requirements.txt
+
+ogb-inference:
+  # <<: *gradient_repository_options
+  location: ../ogb-competition
+  generated: true
+  notebook:
+    file: gps++_inference.ipynb
+  requirements_file: requirements.txt
+
+keras-demo:
+  # <<: *gradient_repository_options
+  location: ../learning-TensorFlow2-on-IPU/keras
+  generated: true
+  notebook:
+    file: demo.ipynb
+
+
+mnist-mnist:
+  # <<: *gradient_repository_options
+  location: ../learning-TensorFlow2-on-IPU/mnist
+  generated: true
+  notebook:
+    file: mnist.ipynb
+  requirements_file: requirements.txt
+
+
+tensorboard-demo:
+  # <<: *gradient_repository_options
+  location: ../learning-TensorFlow2-on-IPU/tensorboard
+  generated: true
+  notebook:
+    file: demo.ipynb
+  requirements_file: requirements.txt
+
+
+# tf2_cluster_gcn_ppi_train_gen_pod4:
+#   <<: *examples_repository_options
+#   location: ../gnn/cluster_gcn/tensorflow2
+#   requirements_file: requirements.txt
+#   required_apt_packages: ["libmetis-dev=5.1.0.dfsg-5"]
+#   allow_wandb: true  # Needed because wandb defaults to True in app
+#   env:
+#     TF_POPLAR_FLAGS: '--executable_cache_path=/tmp/tf_cache/'
+#   data:
+#     throughput:
+#       regexp: 'throughput: *(.*?) samples\/sec'
+#   output:
+#     - [samples/sec, 'throughput']
+#   description: |
+#     This benchmark measures the throughput of Cluster-GCN training
+#     on the PPI dataset.
+#   cmd: >-
+#     poprun
+#       --mpi-global-args="--tag-output"
+#       --num-replicas=4
+#       --num-instances=4
+#       --executable-cache-path=/tmp/tf_cache/
+#     python3 run_cluster_gcn.py
+#       --training.epochs 40
+#       --training.replicas 4
+#       --training.epochs-per-execution 4
+#       --do-validation false
+#       --do-test false
+#       --wandb false
+#       --dataset-name generated
+#       --regenerate-dataset-cache true
+#       --save-dataset-cache false
+#       --regenerate-clustering-cache true
+#       --save-clustering-cache false
+#       configs/train_ppi.json
