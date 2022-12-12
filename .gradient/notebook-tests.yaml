@@ -17,12 +17,13 @@ examples_repository_options: &examples_repository_options
 Graphcore-Tensorflow2-README_first:
   # <<: *gradient_repository_options
   generated: true
+  location: ../
   notebook:
     file: README_first.ipynb
 
 gnn-cluster-gcn-notebook:
   # <<: *gradient_repository_options
-  location: gnn-cluster-gcn
+  location: ../gnn-cluster-gcn
   generated: true
   notebook:
     file: run_cluster_gcn_notebook.ipynb
@@ -30,7 +31,7 @@ gnn-cluster-gcn-notebook:
 
 ogb-training:
   # <<: *gradient_repository_options
-  location: ogb-competition
+  location: ../ogb-competition
   generated: true
   notebook:
     file: gps++_training.ipynb
@@ -38,7 +39,7 @@ ogb-training:
 
 ogb-inference:
   # <<: *gradient_repository_options
-  location: ogb-competition
+  location: ../ogb-competition
   generated: true
   notebook:
     file: gps++_inference.ipynb
@@ -46,7 +47,7 @@ ogb-inference:
 
 keras-demo:
   # <<: *gradient_repository_options
-  location: learning-TensorFlow2-on-IPU/keras
+  location: ../learning-TensorFlow2-on-IPU/keras
   generated: true
   notebook:
     file: demo.ipynb
@@ -54,7 +55,7 @@ keras-demo:
 
 mnist-mnist:
   # <<: *gradient_repository_options
-  location: learning-TensorFlow2-on-IPU/mnist
+  location: ../learning-TensorFlow2-on-IPU/mnist
   generated: true
   notebook:
     file: mnist.ipynb
@@ -63,7 +64,7 @@ mnist-mnist:
 
 tensorboard-demo:
   # <<: *gradient_repository_options
-  location: learning-TensorFlow2-on-IPU/tensorboard
+  location: ../learning-TensorFlow2-on-IPU/tensorboard
   generated: true
   notebook:
     file: demo.ipynb
@@ -72,7 +73,7 @@ tensorboard-demo:
 
 # tf2_cluster_gcn_ppi_train_gen_pod4:
 #   <<: *examples_repository_options
-#   location: gnn/cluster_gcn/tensorflow2
+#   location: ../gnn/cluster_gcn/tensorflow2
 #   requirements_file: requirements.txt
 #   required_apt_packages: ["libmetis-dev=5.1.0.dfsg-5"]
 #   allow_wandb: true  # Needed because wandb defaults to True in app
