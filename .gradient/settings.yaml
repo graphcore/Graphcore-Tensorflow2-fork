@@ -1,7 +1,7 @@
 integrations:
   ogbn_arxiv:
     type: dataset
-    ref: paperspace/dsn5wmo5xkgyqug:e7pc9wn
+    ref: paperspace/dse7nwrf3tr7cl8:a27q61l
   ogb_lsc_pcqm4mv2:
     type: dataset
     ref: paperspace/dsny3t160bciwgy:yzzo2ta
