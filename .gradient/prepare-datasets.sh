@@ -25,7 +25,7 @@ symlink-public-resources() {
 echo "Starting preparation of datasets"
 
 # symlink exe_cache files
-symlink-public-resources "${PUBLIC_DATASET_DIR}/exe_cache" $POPLAR_EXECUTABLE_CACHE_DIR
+symlink-public-resources "${PUBLIC_DATASET_DIR}/exe_cache_tf2" $POPLAR_EXECUTABLE_CACHE_DIR
 # symlink ogbn_arxiv dataset for cluster gcn notebook
 symlink-public-resources "${PUBLIC_DATASET_DIR}/datasets/ogbn_arxiv" "${DATASET_DIR}/ogbn_arxiv"
 # symlink OGB-specific folders

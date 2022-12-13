@@ -1,7 +1,10 @@
-# integrations:
-#   ogbn_arxiv:
-#     type: dataset
-#     ref: paperspace/dsn5wmo5xkgyqug:e7pc9wn
-#   poplar-executables-tf2:
-#     type: dataset
-#     ref: paperspace/dssv0xjgptlxoxk:7v019uu
+integrations:
+  ogbn_arxiv:
+    type: dataset
+    ref: paperspace/dsn5wmo5xkgyqug:e7pc9wn
+  ogb_lsc_pcqm4mv2:
+    type: dataset
+    ref: paperspace/dsny3t160bciwgy:yzzo2ta
+  poplar-executables-tf2:
+    type: dataset
+    ref: paperspace/dsu3trzecfcd8kk:2z0eipy
