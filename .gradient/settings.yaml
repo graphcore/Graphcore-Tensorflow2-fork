@@ -1,0 +1,10 @@
+integrations:
+  ogbn_arxiv:
+    type: dataset
+    ref: paperspace/dse7nwrf3tr7cl8:a27q61l
+  ogb_lsc_pcqm4mv2:
+    type: dataset
+    ref: paperspace/dsny3t160bciwgy:yzzo2ta
+  poplar-executables-tf2:
+    type: dataset
+    ref: paperspace/dsu3trzecfcd8kk:2z0eipy

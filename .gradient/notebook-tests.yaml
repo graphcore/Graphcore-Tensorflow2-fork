@@ -1,0 +1,96 @@
+
+Graphcore-Tensorflow2-README_first:
+  generated: true
+  location: ../
+  notebook:
+    file: README_first.ipynb
+
+gnn-cluster-gcn-notebook:
+  location: ../gnn-cluster-gcn
+  generated: true
+  notebook:
+    timeout: 10000
+    file: run_cluster_gcn_notebook.ipynb
+  requirements_file: requirements.txt
+
+ogb-training:
+  location: ../ogb-competition
+  generated: true
+  notebook:
+    timeout: 10000
+    file: gps++_training.ipynb
+  requirements_file: requirements.txt
+
+ogb-inference:
+  location: ../ogb-competition
+  generated: true
+  notebook:
+    timeout: 10000
+    file: gps++_inference.ipynb
+  requirements_file: requirements.txt
+
+keras-demo:
+  location: ../learning-TensorFlow2-on-IPU/keras
+  generated: true
+  notebook:
+    timeout: 10000
+    file: demo.ipynb
+
+
+mnist-mnist:
+  location: ../learning-TensorFlow2-on-IPU/mnist
+  generated: true
+  notebook:
+    timeout: 10000
+    file: mnist.ipynb
+  requirements_file: requirements.txt
+
+
+tensorboard-demo:
+  location: ../learning-TensorFlow2-on-IPU/tensorboard
+  generated: true
+  notebook:
+    timeout: 10000
+    file: demo.ipynb
+  requirements_file: requirements.txt
+
+# examples_repository_options: &examples_repository_options
+#   repository:
+#     origin: https://github.com/graphcore/examples.git
+#     ref: v3.0.0
+#
+# tf2_cluster_gcn_ppi_train_gen_pod4:
+#   <<: *examples_repository_options
+#   location: ../gnn/cluster_gcn/tensorflow2
+#   requirements_file: requirements.txt
+#   required_apt_packages: ["libmetis-dev=5.1.0.dfsg-5"]
+#   allow_wandb: true  # Needed because wandb defaults to True in app
+#   env:
+#     TF_POPLAR_FLAGS: '--executable_cache_path=/tmp/tf_cache/'
+#   data:
+#     throughput:
+#       regexp: 'throughput: *(.*?) samples\/sec'
+#   output:
+#     - [samples/sec, 'throughput']
+#   description: |
+#     This benchmark measures the throughput of Cluster-GCN training
+#     on the PPI dataset.
+#   cmd: >-
+#     poprun
+#       --mpi-global-args="--tag-output"
+#       --num-replicas=4
+#       --num-instances=4
+#       --executable-cache-path=/tmp/tf_cache/
+#     python3 run_cluster_gcn.py
+#       --training.epochs 40
+#       --training.replicas 4
+#       --training.epochs-per-execution 4
+#       --do-validation false
+#       --do-test false
+#       --wandb false
+#       --dataset-name generated
+#       --regenerate-dataset-cache true
+#       --save-dataset-cache false
+#       --regenerate-clustering-cache true
+#       --save-clustering-cache false
+#       configs/train_ppi.json
