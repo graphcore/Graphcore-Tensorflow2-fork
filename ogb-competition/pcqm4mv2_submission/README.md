@@ -8,15 +8,14 @@ An optimised hybrid GNN/Transformer model for molecular property prediction usin
 
 This model is optimised for Graphcore IPUs and requires the Graphcore's Poplar SDK to run. You can access IPUs through [Paperspace](https://www.paperspace.com/graphcore), using the button above, or [G-Core](https://gcore.com/partners/graphcore).
 
-Create a virtual environment and install the Poplar SDK, including the TensorFlow 2 wheels from inside the SDK directory:
+#### Running on Paperspace
+
+The Paperspace environment lets you run this notebook with no set up. To improve your experience we preload datasets and pre-install packages, this can take a few minutes, if you experience errors immediately after starting a session please try restarting the kernel before contacting support. If a problem persists or you want to give us feedback on the content of this notebook, please reach out to through our community of developers using our [slack channel](graphcorecommunity.slack.com) or raise a [GitHub issue](https://github.com/gradient-ai/Graphcore-Tensorflow2/issues).
+
+
+Install the requirements:
 
 ```shell
-virtualenv --python python3.6 .gps_venv
-source .gps_venv/bin/activate
-source <path to the Graphcore SDK>/enable
-pip install <path to the TensorFlow-2 wheel from the Poplar SDK>
-pip install --force-reinstall --no-deps <path to the Keras wheel from the Poplar SDK>
-pip install <path to the ipu_tensorflow_addons wheel for TensorFlow 2 from the Poplar SDK>
 pip install -r requirements.txt
 ```
 
@@ -37,7 +36,7 @@ wandb offline
 
 The [PCQM4Mv2](https://arxiv.org/abs/2103.09430) dataset is a recently published dataset for the OGB Large Scale Challenge built to aide the development of state-of-the-art machine learning models for molecular property prediction. The task is for the quantum chemistry task of predicting the [HOMO-LUMO energy gap](https://en.wikipedia.org/wiki/HOMO_and_LUMO) of a molecule.
 
-The dataset consists of 3.7 million molecules defined by their SMILES strings which can simply be represented as a graph with nodes and edges. 
+The dataset consists of 3.7 million molecules defined by their SMILES strings which can simply be represented as a graph with nodes and edges.
 
 The dataset includes four splits: train, valid, test-challenge and test-dev. The train and valid splits have true label and can be used for model development. The test-challenge split is used for the OGB-LSC PCQM4Mv2 challenge submission and test-dev for the [leaderboard](https://ogb.stanford.edu/docs/lsc/leaderboards/#pcqm4mv2) submission.
 
@@ -70,7 +69,7 @@ We have provided three configurations of our model of increasing size trained on
 | Model config | Parameters | No. layers | Train MAE | Valid MAE | Config file name | Checkpoint |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | GPS++ 11M | 11M | 4 | ~0.075 | ~0.090 | GPS_PCQ_4gps_11M.yaml | [11M ckpt](https://graphcore-ogblsc-pcqm4mv2.s3.us-west-1.amazonaws.com/GPS_PCQ_4gps_11M.tar.gz) |
-| GPS++ 22M | 22M | 8 | ~0.056 | ~0.082 | GPS_PCQ_8gps_22M.yaml | [22M ckpt](https://graphcore-ogblsc-pcqm4mv2.s3.us-west-1.amazonaws.com/GPS_PCQ_8gps_22M.tar.gz) | 
+| GPS++ 22M | 22M | 8 | ~0.056 | ~0.082 | GPS_PCQ_8gps_22M.yaml | [22M ckpt](https://graphcore-ogblsc-pcqm4mv2.s3.us-west-1.amazonaws.com/GPS_PCQ_8gps_22M.tar.gz) |
 | GPS++ | 44M |  16 | ~0.044 | ~0.077 | GPS_PCQ_16gps_44M.yaml | [gps++ ckpt1](https://graphcore-ogblsc-pcqm4mv2.s3.us-west-1.amazonaws.com/GPS_PCQ_16gps_44M.tar.gz) |
 | GPS++ trained on valid split | 44M |  16 | ~0.044 | NA | GPS_PCQ_16gps_44M.yaml | [gps++ ckpt2](https://graphcore-ogblsc-pcqm4mv2.s3.us-west-1.amazonaws.com/GPS_PCQ_16gps_44M_inc_valid.tar.gz) |
 
