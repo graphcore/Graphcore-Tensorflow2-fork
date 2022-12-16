@@ -26,51 +26,17 @@ on the MNIST dataset for character recognition. This problem is purposely
 selected for demonstration as it is rather straightforward and allows the focus
 of this tutorial to be on the use of TensorBoard.
 
-## Preliminary Setup
-To run the code in this tutorial there are two basic requirements.
+### Running on Paperspace
 
-- A Poplar SDK environment enabled, with the Graphcore port of TensorFlow 2
-  installed (see the [Getting Started
-  guide](https://docs.graphcore.ai/en/latest/getting-started.html) for your IPU
-  system)
+The Paperspace environment lets you run this notebook with no set up. To improve your experience we preload datasets and pre-install packages, this can take a few minutes, if you experience errors immediately after starting a session please try restarting the kernel before contacting support. If a problem persists or you want to give us feedback on the content of this notebook, please reach out to through our community of developers using our [slack channel](graphcorecommunity.slack.com) or raise a [GitHub issue](https://github.com/gradient-ai/Graphcore-Tensorflow2/issues).]
+
+To run the code in this tutorial there are two basic requirements.
 - Python packages installed with `python -m pip install -r requirements.txt`
 """
 # %pip install -q -r requirements.txt
 # sst_ignore_md
 # sst_ignore_code_only
 """
-If you wish to follow along with the Jupyter notebook provided for this
-tutorial, then some additional setup steps are required.
-
-First, ensuring that you have a Poplar SDK environment enabled, install the
-Jupyter Notebook server in that environment, as follows.
-
-```
-python -m pip install jupyter
-```
-
-Once the Jupyter Notebook server is installed in your environment, start
-Jupyter as follows.
-
-```
-jupyter-notebook --no-browser --port 8888
-```
-
-On your local machine, you can now forward the port 8888 (chosen here) to
-the remote machine running your Poplar environment. Note that the choice
-of port is entirely up to you. Here, 8888 is simply an example.
-
-```
-ssh -NL 8888:localhost:8888 <your-username>@<your-machine>.<your-domain>
-```
-
-You can now navigate in your web browser to the Jupyter instance running on
-your remote machine via the address `localhost:8888`.
-
-For more details about this process, or if you need troubleshooting, see our
-[guide on using IPUs from Jupyter
-notebooks](../../standard_tools/using_jupyter/README.md).
-
 ## Introduction to TensorBoard and Data Logging
 ### How does TensorBoard work?
 TensorBoard itself runs independently of any TensorFlow processes, so starting
