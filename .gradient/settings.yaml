@@ -5,6 +5,6 @@ integrations:
   ogb_lsc_pcqm4mv2:
     type: dataset
     ref: paperspace/dsny3t160bciwgy:yzzo2ta
-  poplar-executables-tf2:
+  poplar-executables-tf2-3-1:
     type: dataset
-    ref: paperspace/dsu3trzecfcd8kk:3kw6ilz
+    ref: paperspace/dswaj6xwmqub6f6:mowrqoy
