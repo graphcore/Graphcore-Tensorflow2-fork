@@ -26,7 +26,6 @@ export TF_POPLAR_FLAGS='--executable_cache_path='${POPLAR_EXECUTABLE_CACHE_DIR}'
 export OGB_DATASET_DIR="${DATASET_DIR}/ogb_lsc_pcqm4mv2/datasets"
 export OGB_CHECKPOINT_DIR="${CHECKPOINT_DIR}/ogb_lsc_pcqm4mv2/checkpoints"
 export OGB_SUBMISSION_CODE="./pcqm4mv2_submission"
-export RDMAV_FORK_SAFE=1
 
 
 nohup /notebooks/.gradient/prepare-datasets.sh ${@} & tail -f nohup.out &
