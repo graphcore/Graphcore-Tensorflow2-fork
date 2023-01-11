@@ -28,7 +28,7 @@ apt install -y libfuse3-dev fuse-overlayfs
 echo "Starting preparation of datasets"
 
 # symlink exe_cache files
-symlink-public-resources "${PUBLIC_DATASET_DIR}/poplar-executables-tf2" $POPLAR_EXECUTABLE_CACHE_DIR
+symlink-public-resources "${PUBLIC_DATASET_DIR}/poplar-executables-tf2-3-1" $POPLAR_EXECUTABLE_CACHE_DIR
 # symlink ogbn_arxiv dataset for cluster gcn notebook
 symlink-public-resources "${PUBLIC_DATASET_DIR}/ogbn_arxiv" "${DATASET_DIR}/ogbn_arxiv"
 # symlink OGB-specific folders
