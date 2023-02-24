@@ -22,9 +22,6 @@ symlink-public-resources() {
     fuse-overlayfs -o lowerdir=${public_source_dir},upperdir=${upperdir},workdir=${workdir} ${target_dir}
 
 }
-apt update -y
-apt install -y libfuse3-dev fuse-overlayfs
-
 echo "Starting preparation of datasets"
 
 # symlink exe_cache files
