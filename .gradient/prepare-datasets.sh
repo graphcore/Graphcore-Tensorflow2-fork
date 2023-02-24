@@ -22,6 +22,13 @@ symlink-public-resources() {
     fuse-overlayfs -o lowerdir=${public_source_dir},upperdir=${upperdir},workdir=${workdir} ${target_dir}
 
 }
+if [ ! command -v fuse-overlayfs &> /dev/null ]
+then
+    echo "fuse-overlayfs not found installing - please update to our latest image"
+    apt update -y
+    apt install -y libfuse3-dev fuse-overlayfs
+fi
+
 echo "Starting preparation of datasets"
 
 # symlink exe_cache files
@@ -43,9 +50,7 @@ cd -
 echo "Finished running setup.sh."
 # Run automated test if specified
 if [[ "$1" == "test" ]]; then
-    #source .gradient/automated-test.sh "${@:2}"
-    bash /notebooks/.gradient/automated-test.sh $2 $3 $4 $5 $6 $7 $8
+    bash /notebooks/.gradient/automated-test.sh "${@:2}"
 elif [[ "$2" == "test" ]]; then
-    #source .gradient/automated-test.sh "${@:2}"
-    bash /notebooks/.gradient/automated-test.sh $3 $4 $5 $6 $7 $8 $9
+    bash /notebooks/.gradient/automated-test.sh "${@:3}"
 fi
