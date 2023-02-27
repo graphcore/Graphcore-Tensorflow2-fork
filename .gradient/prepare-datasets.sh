@@ -22,11 +22,12 @@ symlink-public-resources() {
     fuse-overlayfs -o lowerdir=${public_source_dir},upperdir=${upperdir},workdir=${workdir} ${target_dir}
 
 }
+
 if [ ! "$(command -v fuse-overlayfs)" ]
 then
     echo "fuse-overlayfs not found installing - please update to our latest image"
     apt update -y
-    apt install -y libfuse3-dev fuse-overlayfs
+    apt install -o DPkg::Lock::Timeout=120 -y psmisc libfuse3-dev fuse-overlayfs
 fi
 
 echo "Starting preparation of datasets"
