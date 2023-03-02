@@ -51,6 +51,7 @@ cd -
 echo "Finished running setup.sh."
 # Run automated test if specified
 if [[ "$1" == "test" ]]; then
+
     bash /notebooks/.gradient/automated-test.sh "${@:2}"
 elif [[ "$2" == "test" ]]; then
     bash /notebooks/.gradient/automated-test.sh "${@:3}"
