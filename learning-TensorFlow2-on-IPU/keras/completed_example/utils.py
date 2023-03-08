@@ -77,26 +77,18 @@ def load_data(batch_size):
 
 def parse_params():
     parser = argparse.ArgumentParser(description="Keras MNIST example")
-    parser.add_argument(
-        "--pipelining", action="store_true", help="Enable IPU pipelining"
-    )
-    parser.add_argument(
-        "--use-ipu", action="store_true", help="Use IPU-specific Keras model classes"
-    )
+    parser.add_argument("--pipelining", action="store_true", help="Enable IPU pipelining")
+    parser.add_argument("--use-ipu", action="store_true", help="Use IPU-specific Keras model classes")
     parser.add_argument(
         "--gradient-accumulation-steps-per-replica",
         type=int,
         default=8,
         help="The number of steps to execute on each replica before performing a weight update step",
     )
-    parser.add_argument(
-        "--batch-size", type=int, default=80, help="The batch size to use"
-    )
+    parser.add_argument("--batch-size", type=int, default=80, help="The batch size to use")
 
     args = parser.parse_args()
-    if (
-        args.pipelining or args.gradient_accumulation_steps_per_replica
-    ) and not args.use_ipu:
+    if (args.pipelining or args.gradient_accumulation_steps_per_replica) and not args.use_ipu:
         print(
             "Note: `--pipelining` and `--gradient-accumulation-steps-per-replica` are IPU"
             " specific flags. See `--use-ipu`"

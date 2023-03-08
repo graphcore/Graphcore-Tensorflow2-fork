@@ -22,17 +22,13 @@ working_path = Path(__file__).parents[1] / "completed_example"
 
 @pytest.mark.category1
 def test_run_complete_cpu():
-    testing_util.run_command(
-        "python3 main.py", working_path, "Program ran successfully"
-    )
+    testing_util.run_command("python3 main.py", working_path, "Program ran successfully")
 
 
 @pytest.mark.category1
 @pytest.mark.ipus(2)
 def test_run_complete_ipu():
-    testing_util.run_command(
-        "python3 main.py --use-ipu", working_path, "Program ran successfully"
-    )
+    testing_util.run_command("python3 main.py --use-ipu", working_path, "Program ran successfully")
 
 
 @pytest.mark.category1
