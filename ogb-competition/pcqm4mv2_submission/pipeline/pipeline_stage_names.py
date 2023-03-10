@@ -3,7 +3,7 @@
 from keras.layers.core import Lambda, SlicingOpLambda, TFOpLambda
 
 from model.encoders.base_encoder import BaseEncoder, ConcatFeatures
-from model.gnn.layers import (DecoderLayer, InteractionNetworkLayer)
+from model.gnn.layers import DecoderLayer, InteractionNetworkLayer
 from model.hybrid.layers import GPSLayer
 from model.encoders.base_encoder import ConcatFeatures
 

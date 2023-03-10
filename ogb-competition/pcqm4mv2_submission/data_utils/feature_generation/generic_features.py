@@ -16,12 +16,13 @@ def _preprocess_item_centrality_encoding(num_nodes, edges):
     centrality = get_in_degrees(edges, num_nodes)
     # Centrality 0 = non-trainable padding
     centrality += 1
-    return (centrality, )
+    return (centrality,)
 
 
 def get_shortest_path_distances_from_dataset(dataset_item, item_options):
-    return _preprocess_item_shortest_path_distances(dataset_item["num_nodes"], dataset_item["edge_index"],
-                                                    **item_options)
+    return _preprocess_item_shortest_path_distances(
+        dataset_item["num_nodes"], dataset_item["edge_index"], **item_options
+    )
 
 
 def _preprocess_item_shortest_path_distances(num_nodes, edge_idxs, max_shortest_path_distance):
@@ -32,15 +33,16 @@ def _preprocess_item_shortest_path_distances(num_nodes, edge_idxs, max_shortest_
     adj[receivers, senders] = True
     path_lengths, _ = path_algorithms.floyd_warshall(adj)
     path_lengths[path_lengths == 510] = -1  # 510 is magic value in floyd_warshall implying disconnected
-    assert np.max(path_lengths) <= max_shortest_path_distance, \
-        f"Increase --model.max_shortest_path_distance to at least {np.max(path_lengths)}"
+    assert (
+        np.max(path_lengths) <= max_shortest_path_distance
+    ), f"Increase --model.max_shortest_path_distance to at least {np.max(path_lengths)}"
 
     # +1 makes space for value 0 to be non-trainable padding index in the embedding
     # Path lengths are used as categoricals, so offsetting by 1 doesn't change their function
     path_lengths += 1
     path_lengths = path_lengths.astype(np.int16)
 
-    return (path_lengths, )
+    return (path_lengths,)
 
 
 def get_send_rcv_from_dataset(dataset_item, item_options):
@@ -53,9 +55,11 @@ def _preprocess_item_send_rcv(edge_feat, edge_idx, bidirectional=True):
     senders = edge_idx[0, ::2]
     receivers = edge_idx[1, ::2]
     if bidirectional:
-        return np.concatenate([feat, feat], axis=0), np.concatenate([senders, receivers],
-                                                                    axis=-1), np.concatenate([receivers, senders],
-                                                                                             axis=-1)
+        return (
+            np.concatenate([feat, feat], axis=0),
+            np.concatenate([senders, receivers], axis=-1),
+            np.concatenate([receivers, senders], axis=-1),
+        )
     else:
         return feat, senders, receivers
 
@@ -77,9 +81,13 @@ def _check_for_nans(tensor):
 
 
 def get_bond_lengths_from_dataset(dataset_item, item_options):
-    nan_in_conformer = dataset_item.get("nan_in_conformer", _check_for_nans(dataset_item['ogb_conformer']))
-    return (_preprocess_item_bond_lengths(dataset_item['ogb_conformer'], dataset_item['senders'],
-                                          dataset_item['receivers'], **item_options), nan_in_conformer)
+    nan_in_conformer = dataset_item.get("nan_in_conformer", _check_for_nans(dataset_item["ogb_conformer"]))
+    return (
+        _preprocess_item_bond_lengths(
+            dataset_item["ogb_conformer"], dataset_item["senders"], dataset_item["receivers"], **item_options
+        ),
+        nan_in_conformer,
+    )
 
 
 def calculate_bond_lengths(pos, senders, receivers):
@@ -94,16 +102,15 @@ def _preprocess_item_bond_lengths(ogb_pos, senders, receivers, **kwargs):
 
 
 def get_atom_distances_from_dataset(dataset_item, item_options):
-    nan_in_conformer = dataset_item.get("nan_in_conformer", _check_for_nans(dataset_item['ogb_conformer']))
-    return (*_preprocess_item_atom_distances(dataset_item['ogb_conformer'], **item_options), nan_in_conformer)
+    nan_in_conformer = dataset_item.get("nan_in_conformer", _check_for_nans(dataset_item["ogb_conformer"]))
+    return (*_preprocess_item_atom_distances(dataset_item["ogb_conformer"], **item_options), nan_in_conformer)
 
 
 def _preprocess_item_atom_distances(ogb_pos):
     # Calculate direction vector based on the original atom positions
     # shape: n_nodes
     # convert to shape n_nodes, n_nodes
-    relative_3D_pos = np.expand_dims(ogb_pos, axis = 0) -\
-                np.expand_dims(ogb_pos, axis = 1)
+    relative_3D_pos = np.expand_dims(ogb_pos, axis=0) - np.expand_dims(ogb_pos, axis=1)
 
     ogb_atom_distances = np.linalg.norm(relative_3D_pos, axis=-1)
     # shape of direction vector: [num_nodes, num_nodes, 3]
@@ -161,13 +168,13 @@ def _preprocess_relative_features_from_dataset(dataset_item, relative_features_l
         if len(relative_features) == 0:
             # return a 2D tensor of zeros with the shape of [0, size] if there is no edge in one graph
             # because they will need to be able to concate with the other non-empty 2D  relative features
-            return (np.zeros((0, size)), )
+            return (np.zeros((0, size)),)
         else:
             output = np.concatenate(relative_features, axis=-1) if len(relative_features) > 1 else relative_features[0]
         output_size = len(output[0])
         # make sure the user input size is the same as the real relative feature size
         assert output_size == size
-        return (output, )
+        return (output,)
     else:
         raise ValueError(
             f"Non-empty relative_features_list must be provided for the relative features. If not intend to use, remove the relative_feature argumment from config"
@@ -185,8 +192,12 @@ def get_source_to_target_relative_feature(feature_from_dataset, sender, receiver
 
 
 def get_relative_feature_from_both_direction(feature_from_dataset, sender, receiver):
-    relative_feature = np.concatenate((get_target_to_source_relative_feature(feature_from_dataset, sender, receiver),
-                                       get_source_to_target_relative_feature(feature_from_dataset, sender, receiver)))
+    relative_feature = np.concatenate(
+        (
+            get_target_to_source_relative_feature(feature_from_dataset, sender, receiver),
+            get_source_to_target_relative_feature(feature_from_dataset, sender, receiver),
+        )
+    )
     return relative_feature
 
 
@@ -202,15 +213,42 @@ def get_squared_relative_feature(feature_from_dataset, sender, receiver):
 
 def trim_chemical_features(dataset_item, item_options):
     enforce_chemical_node_features_order = [
-        'atomic_num', 'chiral_tag', 'degree', 'possible_formal_charge', 'possible_numH', 'possible_number_radical_e',
-        'possible_hybridization', 'possible_is_aromatic', 'possible_is_in_ring', 'explicit_valence', 'implicit_valence',
-        'total_valence', 'total_degree', 'default_valence', 'n_outer_electrons', 'rvdw', 'rb0', 'env2', 'env3', 'env4',
-        'env5', 'env6', 'env7', 'env8', 'gasteiger_charge', 'donor', 'acceptor', 'num_chiral_centers'
+        "atomic_num",
+        "chiral_tag",
+        "degree",
+        "possible_formal_charge",
+        "possible_numH",
+        "possible_number_radical_e",
+        "possible_hybridization",
+        "possible_is_aromatic",
+        "possible_is_in_ring",
+        "explicit_valence",
+        "implicit_valence",
+        "total_valence",
+        "total_degree",
+        "default_valence",
+        "n_outer_electrons",
+        "rvdw",
+        "rb0",
+        "env2",
+        "env3",
+        "env4",
+        "env5",
+        "env6",
+        "env7",
+        "env8",
+        "gasteiger_charge",
+        "donor",
+        "acceptor",
+        "num_chiral_centers",
     ]
 
     enforce_chemical_edge_features_order = [
-        'possible_bond_type', 'possible_bond_stereo', 'possible_is_conjugated', 'possible_is_in_ring',
-        'possible_bond_dir'
+        "possible_bond_type",
+        "possible_bond_stereo",
+        "possible_is_conjugated",
+        "possible_is_in_ring",
+        "possible_bond_dir",
     ]
 
     ordered_chemical_node_features = [
@@ -227,7 +265,7 @@ def trim_chemical_features(dataset_item, item_options):
     for i in ordered_chemical_node_features:
         index_to_keep.append(enforce_chemical_node_features_order.index(i))
     new_node_feat_arr = []
-    for j in dataset_item['node_feat']:
+    for j in dataset_item["node_feat"]:
         new_node_feat = []
         for idx in index_to_keep:
             if item_options["do_not_use_atomic_number"] and idx == 0:
@@ -246,7 +284,7 @@ def trim_chemical_features(dataset_item, item_options):
     for i in ordered_chemical_edge_features:
         edge_index_to_keep.append(enforce_chemical_edge_features_order.index(i))
     new_edge_feat_arr = []
-    for j in dataset_item['edge_feat']:
+    for j in dataset_item["edge_feat"]:
         new_edge_feat = []
         for idx in edge_index_to_keep:
             new_edge_feat.append(j[idx])

@@ -28,7 +28,7 @@ class Config:
 def test_checkpoint_creation():
     with TemporaryDirectory() as temp_dir:
 
-        checkpoint_name = (f"{inspect.currentframe().f_code.co_name}" f"_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+        checkpoint_name = f"{inspect.currentframe().f_code.co_name}" f"_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         checkpoint_dir = Path(temp_dir).joinpath(checkpoint_name)
 
         micro_batch_size = 4
@@ -50,7 +50,7 @@ def test_checkpoint_creation():
 
         logging.info("Running training...")
         logging.info(f"Saving weights to {checkpoint_dir}")
-        model_path = os.path.join(checkpoint_dir, 'model-{epoch:05d}')
+        model_path = os.path.join(checkpoint_dir, "model-{epoch:05d}")
 
         callback = CheckpointCallback(
             use_wandb=False,
@@ -77,5 +77,5 @@ def test_checkpoint_creation():
 
         # 2 checkpoints created at 50 and 100 micro batches
         # 1 checkpoint created at end of training (120 micro batches)
-        assert (len(checkpoint_files) == 3)
+        assert len(checkpoint_files) == 3
         assert any(["FINAL" in file for file in checkpoint_files])

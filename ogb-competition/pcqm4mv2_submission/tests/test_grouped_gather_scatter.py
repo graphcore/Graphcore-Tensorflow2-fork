@@ -9,7 +9,7 @@ import tensorflow as tf
 import tqdm
 from tensorflow.python import ipu
 
-from model.gnn.aggregators import (_gather, _scatter_max, _scatter_mean, _scatter_softmax, _scatter_sqrtN, _scatter_sum)
+from model.gnn.aggregators import _gather, _scatter_max, _scatter_mean, _scatter_softmax, _scatter_sqrtN, _scatter_sum
 
 
 @dataclasses.dataclass
@@ -37,21 +37,21 @@ def test_grouped_scatter_gather():
     for _ in tqdm.trange(N_TESTS):
         inputs = tf.random.normal([FLAGS.micro_batch_size, FLAGS.n_nodes, FLAGS.n_latent])
         indices = tf.constant(
-            np.random.randint(low=0, high=FLAGS.n_nodes, size=[FLAGS.micro_batch_size, FLAGS.n_edges]).astype(np.int32))
+            np.random.randint(low=0, high=FLAGS.n_nodes, size=[FLAGS.micro_batch_size, FLAGS.n_edges]).astype(np.int32)
+        )
 
         for grouped in (True, False):
             with tf.GradientTape() as tape:
                 tape.watch(inputs)
-                outputs = _gather(inputs, indices, gather_scatter_method='grouped' if grouped else 'debug')
+                outputs = _gather(inputs, indices, gather_scatter_method="grouped" if grouped else "debug")
                 loss = tf.reduce_mean(tf.abs(outputs))
             gather_grads[grouped] = tape.gradient(loss, inputs)
 
             with tf.GradientTape() as tape:
                 tape.watch(outputs)
-                scattered = _scatter_sum(outputs,
-                                         indices,
-                                         FLAGS.n_nodes,
-                                         gather_scatter_method='grouped' if grouped else 'debug')
+                scattered = _scatter_sum(
+                    outputs, indices, FLAGS.n_nodes, gather_scatter_method="grouped" if grouped else "debug"
+                )
                 loss = tf.reduce_mean(tf.abs(scattered))
             scatter_grads[grouped] = tape.gradient(loss, outputs)
 
@@ -78,16 +78,19 @@ def test_grouped_scatter_max():
         inputs = tf.concat([inputs1, inputs2], axis=-1)
         inputs = tf.cast(inputs, tf.float16)
         indices = tf.constant(
-            np.random.randint(low=0, high=FLAGS.n_nodes, size=[FLAGS.micro_batch_size, FLAGS.n_edges]).astype(np.int32))
+            np.random.randint(low=0, high=FLAGS.n_nodes, size=[FLAGS.micro_batch_size, FLAGS.n_edges]).astype(np.int32)
+        )
 
         for grouped in (True, False):
             with tf.GradientTape() as tape:
                 tape.watch(inputs)
-                scattered = _scatter_max(inputs,
-                                         indices,
-                                         FLAGS.n_nodes,
-                                         gather_scatter_method='grouped' if grouped else 'debug',
-                                         backwards_mode='mean')
+                scattered = _scatter_max(
+                    inputs,
+                    indices,
+                    FLAGS.n_nodes,
+                    gather_scatter_method="grouped" if grouped else "debug",
+                    backwards_mode="mean",
+                )
                 loss = tf.reduce_mean(tf.abs(scattered))
             scatter_grads[grouped] = tape.gradient(loss, inputs)
 
@@ -114,16 +117,15 @@ def test_grouped_scatter_softmax():
         inputs = tf.concat([inputs1, inputs2], axis=-1)
         inputs = tf.cast(inputs, tf.float16)
         indices = tf.constant(
-            np.random.randint(low=0, high=FLAGS.n_nodes, size=[FLAGS.micro_batch_size, FLAGS.n_edges]).astype(np.int32))
+            np.random.randint(low=0, high=FLAGS.n_nodes, size=[FLAGS.micro_batch_size, FLAGS.n_edges]).astype(np.int32)
+        )
 
         for grouped in (True, False):
             with tf.GradientTape() as tape:
                 tape.watch(inputs)
-                scattered = _scatter_softmax(inputs,
-                                             indices,
-                                             FLAGS.n_nodes,
-                                             stable=True,
-                                             gather_scatter_method='grouped' if grouped else 'debug')
+                scattered = _scatter_softmax(
+                    inputs, indices, FLAGS.n_nodes, stable=True, gather_scatter_method="grouped" if grouped else "debug"
+                )
                 loss = tf.reduce_mean(tf.abs(scattered))
             scatter_grads[grouped] = tape.gradient(loss, inputs)
 
@@ -150,15 +152,15 @@ def test_grouped_scatter_mean():
         inputs = tf.concat([inputs1, inputs2], axis=-1)
         inputs = tf.cast(inputs, tf.float16)
         indices = tf.constant(
-            np.random.randint(low=0, high=FLAGS.n_nodes, size=[FLAGS.micro_batch_size, FLAGS.n_edges]).astype(np.int32))
+            np.random.randint(low=0, high=FLAGS.n_nodes, size=[FLAGS.micro_batch_size, FLAGS.n_edges]).astype(np.int32)
+        )
 
         for grouped in (True, False):
             with tf.GradientTape() as tape:
                 tape.watch(inputs)
-                scattered = _scatter_mean(inputs,
-                                          indices,
-                                          FLAGS.n_nodes,
-                                          gather_scatter_method='grouped' if grouped else 'debug')
+                scattered = _scatter_mean(
+                    inputs, indices, FLAGS.n_nodes, gather_scatter_method="grouped" if grouped else "debug"
+                )
                 loss = tf.reduce_mean(tf.abs(scattered))
             scatter_grads[grouped] = tape.gradient(loss, inputs)
 
@@ -185,15 +187,15 @@ def test_grouped_scatter_sqrtN():
         inputs = tf.concat([inputs1, inputs2], axis=-1)
         inputs = tf.cast(inputs, tf.float16)
         indices = tf.constant(
-            np.random.randint(low=0, high=FLAGS.n_nodes, size=[FLAGS.micro_batch_size, FLAGS.n_edges]).astype(np.int32))
+            np.random.randint(low=0, high=FLAGS.n_nodes, size=[FLAGS.micro_batch_size, FLAGS.n_edges]).astype(np.int32)
+        )
 
         for grouped in (True, False):
             with tf.GradientTape() as tape:
                 tape.watch(inputs)
-                scattered = _scatter_sqrtN(inputs,
-                                           indices,
-                                           FLAGS.n_nodes,
-                                           gather_scatter_method='grouped' if grouped else 'debug')
+                scattered = _scatter_sqrtN(
+                    inputs, indices, FLAGS.n_nodes, gather_scatter_method="grouped" if grouped else "debug"
+                )
                 loss = tf.reduce_mean(tf.abs(scattered))
             scatter_grads[grouped] = tape.gradient(loss, inputs)
 

@@ -44,7 +44,7 @@ def build_input_features(dataset, required_inputs, feature_to_input_spec, fold):
 
 def create_inputs_from_features(dataset, cfg, fold):
     # Feature Generation Dictionary:
-    # Given all posible Features - and their metadata, pick based on config file
+    # Given all possible Features - and their metadata, pick based on config file
     # Update the feature_dict with required sizes
 
     if cfg.dataset.packing_strategy == "pad_to_max":
@@ -90,21 +90,21 @@ def create_inputs_from_features(dataset, cfg, fold):
             "pad_value": 0,
         },
         "centrality_encoding": {
-            "shape": (n_nodes, ),
+            "shape": (n_nodes,),
             "input_name": "centrality_encoding",
             "model_dtype": tf.int32,
             "input_dtype": tf.uint8,
             "pad_value": 0,
         },
         "senders": {
-            "shape": (n_edges, ),
+            "shape": (n_edges,),
             "input_name": "senders",
             "model_dtype": tf.int32,
             "input_dtype": tf.int32,
             "pad_value": dummy_node_idx,
         },
         "receivers": {
-            "shape": (n_edges, ),
+            "shape": (n_edges,),
             "input_name": "receivers",
             "model_dtype": tf.int32,
             "input_dtype": tf.int32,
@@ -132,14 +132,14 @@ def create_inputs_from_features(dataset, cfg, fold):
             "pad_value": 0,
         },
         "node_graph_idx": {
-            "shape": (n_nodes, ),
+            "shape": (n_nodes,),
             "input_name": "node_graph_idx",
             "model_dtype": tf.int32,
             "input_dtype": tf.int32,
             "pad_value": dummy_graph_idx,
         },
         "edge_graph_idx": {
-            "shape": (n_edges, ),
+            "shape": (n_edges,),
             "input_name": "edge_graph_idx",
             "model_dtype": tf.int32,
             "input_dtype": tf.int32,
@@ -157,52 +157,52 @@ def create_inputs_from_features(dataset, cfg, fold):
             "input_name": "random_walk_landing_probs",
             "model_dtype": tf.float32,
             "input_dtype": tf.float32,
-            "pad_value": 0.,
+            "pad_value": 0.0,
         },
         "lap_eig_vals": {
             "shape": (n_nodes, eig_shape, 1),
             "input_name": "lap_eig_vals",
             "model_dtype": tf.float32,
             "input_dtype": tf.float32,
-            "pad_value": 0.,
+            "pad_value": 0.0,
         },
         "lap_eig_vecs": {
             "shape": (n_nodes, eig_shape),
             "input_name": "lap_eig_vecs",
             "model_dtype": tf.float32,
             "input_dtype": tf.float32,
-            "pad_value": 0.,
+            "pad_value": 0.0,
         },
         "ogb_bond_lengths": {
-            "shape": (n_edges, ),
+            "shape": (n_edges,),
             "input_name": "ogb_bond_lengths",
             "model_dtype": tf.float32,
             "input_dtype": tf.float32,
-            "pad_value": 0.,
+            "pad_value": 0.0,
         },
         "relative_features": {
             "shape": (n_edges, cfg.dataset.features.get("relative_feature", {}).get("size")),
             "input_name": "relative_features",
             "model_dtype": tf.float32,
             "input_dtype": tf.float32,
-            "pad_value": 0.,
+            "pad_value": 0.0,
         },
         "node_mask": {
-            "shape": (n_nodes, ),
+            "shape": (n_nodes,),
             "input_name": "node_mask",
             "model_dtype": tf.int32,
             "input_dtype": tf.int32,
             "pad_value": 0,
         },
         "edge_mask": {
-            "shape": (n_edges, ),
+            "shape": (n_edges,),
             "input_name": "edge_mask",
             "model_dtype": tf.int32,
             "input_dtype": tf.int32,
             "pad_value": 0,
         },
         "nan_in_conformer": {
-            "shape": (n_graphs, ),
+            "shape": (n_graphs,),
             "input_name": "nan_in_conformer",
             "model_dtype": tf.bool,
             "input_dtype": tf.bool,

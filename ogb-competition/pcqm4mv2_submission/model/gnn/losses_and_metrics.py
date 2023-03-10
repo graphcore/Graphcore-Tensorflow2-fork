@@ -32,18 +32,19 @@ def MaskedMeanSquaredError(y_true, y_pred, transform=lambda x: x, padding_value=
 def CosineSimilarityError(y_true, y_pred, padding_value=-1, zero_value=None):
     y_true = tf.cast(y_true, tf.float32)  # [batch, nodes, 3]
     y_pred = tf.cast(y_pred, tf.float32)  # [batch, nodes, 3]
-    padding_mask = tf.where(y_true == padding_value, tf.cast(0, y_true.dtype),
-                            tf.cast(1, y_true.dtype))[:, :, 0]  # [batch, nodes]
+    padding_mask = tf.where(y_true == padding_value, tf.cast(0, y_true.dtype), tf.cast(1, y_true.dtype))[
+        :, :, 0
+    ]  # [batch, nodes]
     cosine_loss = tf.keras.losses.CosineSimilarity(axis=2, reduction=tf.keras.losses.Reduction.NONE)
     loss = (1.0 - cosine_loss(y_true, y_pred)) * padding_mask  # [batch, nodes]
     if zero_value is not None:
         zero_mask = tf.where(y_true == zero_value, tf.cast(0, y_true.dtype), tf.cast(1, y_true.dtype))[:, :, 0]
         loss *= zero_mask
     # Scale over all the nodes and graphs (excluding padding ones)
-    return backend.sum(loss) / tf.maximum(backend.sum(padding_mask), 1.)
+    return backend.sum(loss) / tf.maximum(backend.sum(padding_mask), 1.0)
 
 
-def LossNoisyNodes(labels, pred, loss_weight=1., mode='nodes', method='combined_softmax', vocab_size=[]):
+def LossNoisyNodes(labels, pred, loss_weight=1.0, mode="nodes", method="combined_softmax", vocab_size=[]):
     pred = tf.cast(pred, tf.float32)  # defensive cast
     # labels has size [batch, nodes/edges, num feature categories]
     # preds has size [batch, nodes/edges, sum possible features]
@@ -58,7 +59,7 @@ def LossNoisyNodes(labels, pred, loss_weight=1., mode='nodes', method='combined_
     # convert labels to one_hot representation
     labels = [tf.one_hot(l, v, axis=-1) for l, v in zip(labels, vocab_size)]
 
-    if method == 'combined_softmax':
+    if method == "combined_softmax":
         # do a single softmax over all options (same as DeepMind)
 
         # conat to match pred shape
@@ -71,7 +72,7 @@ def LossNoisyNodes(labels, pred, loss_weight=1., mode='nodes', method='combined_
         # normalise last dim to sum to 1
         labels = labels / tf.maximum(tf.reduce_sum(labels, axis=-1), 1)[..., tf.newaxis]
         losses = tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=pred, axis=-1)
-    elif method == 'split_softmax':
+    elif method == "split_softmax":
         # split pred to match labels
         pred = tf.split(pred, vocab_size, axis=-1)
 
@@ -95,9 +96,7 @@ def batch_size(y_true, y_pred, cfg):
     y_true = tf.cast(y_true, tf.float32)  # defensive cast
     y_pred = tf.cast(y_pred, tf.float32)  # defensive cast
     mask = tf.where(y_true == -1, tf.cast(0, y_true.dtype), tf.cast(1, y_true.dtype))
-    return cfg.ipu_opts.replicas*\
-           cfg.ipu_opts.gradient_accumulation_factor*\
-           backend.sum(mask)
+    return cfg.ipu_opts.replicas * cfg.ipu_opts.gradient_accumulation_factor * backend.sum(mask)
 
 
 def label_mean(y_true, y_pred):
@@ -157,15 +156,15 @@ def var(mask, y_pred):
 
 def get_debug_metrics(names, metrics):
     metric_fns = []
-    if 'max_abs' in metrics:
+    if "max_abs" in metrics:
         metric_fns += [max_abs]
-    if 'mean_abs' in metrics:
+    if "mean_abs" in metrics:
         metric_fns += [mean_abs]
-    if 'mean' in metrics:
+    if "mean" in metrics:
         metric_fns += [mean]
-    if 'var' in metrics:
+    if "var" in metrics:
         metric_fns += [var]
-    if 'var_corr' in metrics:
+    if "var_corr" in metrics:
         metric_fns += [var_corr]
 
     return {n: metric_fns for n in names}

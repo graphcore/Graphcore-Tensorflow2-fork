@@ -7,13 +7,9 @@ import wandb
 
 
 class CheckpointCallback(tf.keras.callbacks.ModelCheckpoint):
-    def __init__(self,
-                 use_wandb=False,
-                 upload_to_wandb=False,
-                 save_checkpoints_locally=False,
-                 total_epochs=None,
-                 *args,
-                 **kwargs) -> None:
+    def __init__(
+        self, use_wandb=False, upload_to_wandb=False, save_checkpoints_locally=False, total_epochs=None, *args, **kwargs
+    ) -> None:
         super().__init__(*args, **kwargs)
         self.use_wandb = use_wandb
         self.upload_to_wandb = upload_to_wandb
@@ -21,7 +17,7 @@ class CheckpointCallback(tf.keras.callbacks.ModelCheckpoint):
         self.epochs = total_epochs
 
     def on_train_end(self, epoch, logs=None):
-        """Overwrite the on train end method to save the last checkpoint 
+        """Overwrite the on train end method to save the last checkpoint
         and then save the checkpoint to wandb
         """
         filepath = self.filepath.replace("{epoch:05d}", "FINAL")
@@ -38,4 +34,4 @@ class CheckpointCallback(tf.keras.callbacks.ModelCheckpoint):
                 # If the checkpoint is saved in 'tmp/' no base_path is needed
                 base_path = None
             # Final checkpoints uploaded to wandb in root directory of wandb run
-            wandb.save(filepath + '*', policy="now", base_path=base_path)
+            wandb.save(filepath + "*", policy="now", base_path=base_path)

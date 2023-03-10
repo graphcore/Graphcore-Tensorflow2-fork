@@ -24,8 +24,10 @@ def pytest_collection_modifyitems(config, items):
     for item in items:
         if "serial" in item.keywords and not run_only_serial:
             item.add_marker(
-                pytest.mark.skip(reason=("This test requires running serially."
-                                         " Use option --serial to run only serial tests")))
+                pytest.mark.skip(
+                    reason=("This test requires running serially." " Use option --serial to run only serial tests")
+                )
+            )
         elif "serial" not in item.keywords and run_only_serial:
             item.add_marker(pytest.mark.skip(reason="Only running serial tests."))
 
@@ -37,7 +39,7 @@ def ipu_static_ops(scope="session"):
     """
     build_path = Path(base_dir, "static_ops")
 
-    shared_libs = ['custom_grouped_gather_scatter.so']
+    shared_libs = ["custom_grouped_gather_scatter.so"]
     paths = [Path(build_path, f) for f in shared_libs]
 
     # Use exclusive lockfile to avoid race conditions on the build:
@@ -45,8 +47,8 @@ def ipu_static_ops(scope="session"):
 
     @ExecuteOncePerFS(lockfile=lock_path, file_list=paths, timeout=120, retries=20)
     def build_ipustaticops():
-        run(['make', 'clean'], cwd=build_path)
-        run(['make', '-j'], cwd=build_path)
+        run(["make", "clean"], cwd=build_path)
+        run(["make", "-j"], cwd=build_path)
 
     build_ipustaticops()
 
@@ -89,8 +91,9 @@ class ExecuteOncePerFS:
                 attempts += 1
 
             # If we are here it means that we timed out...
-            raise RuntimeError(f"Timed out waiting for {remaining_files} to be made"
-                               f" and/or {remaining_exes} to become executable.")
+            raise RuntimeError(
+                f"Timed out waiting for {remaining_files} to be made" f" and/or {remaining_exes} to become executable."
+            )
 
         return wrapped
 
@@ -98,7 +101,7 @@ class ExecuteOncePerFS:
 def build_global_dependencies():
     # Build globally used objects objects
     build_path = Path(base_dir).joinpath("data_utils/feature_generation")
-    shared_libs = ['path_algorithms.so']
+    shared_libs = ["path_algorithms.so"]
     paths = [Path(build_path, f) for f in shared_libs]
 
     # Use exclusive lockfile to avoid race conditions on the build:
@@ -106,8 +109,8 @@ def build_global_dependencies():
 
     @ExecuteOncePerFS(lockfile=lock_path, file_list=paths, timeout=120, retries=20)
     def build_path_algorithms():
-        run(['make', 'clean'], cwd=build_path)
-        run(['make', '-j'], cwd=build_path)
+        run(["make", "clean"], cwd=build_path)
+        run(["make", "-j"], cwd=build_path)
 
     build_path_algorithms()
 

@@ -39,8 +39,9 @@ class SubProcessChecker(unittest.TestCase):
         for i, r in enumerate(regexes):
             match = r.search(output)
             if not match:
-                self.fail(f"Output of command: '{cmd}' contained no match "
-                          f"for: '{must_contain[i]}'\nOutput was:\n{output}")
+                self.fail(
+                    f"Output of command: '{cmd}' contained no match " f"for: '{must_contain[i]}'\nOutput was:\n{output}"
+                )
 
     def run_command(self, cmd, working_path, expected_strings, env=None, timeout=None):
         """
@@ -67,21 +68,25 @@ class SubProcessChecker(unittest.TestCase):
             cmd_list = cmd.split()
 
         if env is None:
-            completed = subprocess.run(args=cmd_list,
-                                       cwd=working_path,
-                                       shell=False,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.STDOUT,
-                                       timeout=timeout)
+            completed = subprocess.run(
+                args=cmd_list,
+                cwd=working_path,
+                shell=False,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                timeout=timeout,
+            )
         else:
-            completed = subprocess.run(args=cmd_list,
-                                       cwd=working_path,
-                                       shell=False,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.STDOUT,
-                                       env=env,
-                                       timeout=timeout)
-        combined_output = str(completed.stdout, 'utf-8')
+            completed = subprocess.run(
+                args=cmd_list,
+                cwd=working_path,
+                shell=False,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                env=env,
+                timeout=timeout,
+            )
+        combined_output = str(completed.stdout, "utf-8")
         try:
             completed.check_returncode()
             return_code_ok = True
@@ -89,9 +94,11 @@ class SubProcessChecker(unittest.TestCase):
             return_code_ok = False
 
         if not return_code_ok:
-            self.fail(f"The following command failed: {cmd}\n"
-                      f"Working path: {working_path}\n"
-                      f"Output of failed command:\n{combined_output}")
+            self.fail(
+                f"The following command failed: {cmd}\n"
+                f"Working path: {working_path}\n"
+                f"Output of failed command:\n{combined_output}"
+            )
 
         self._check_output(cmd, combined_output, expected_strings)
         return combined_output
@@ -100,7 +107,7 @@ class SubProcessChecker(unittest.TestCase):
         losses, throughputs = [], []
 
         match_loss_re = re.compile(r"loss: ([\d.]+)")
-        throughput_re = re.compile(r'^Throughput: ([0-9.,]+) samples')
+        throughput_re = re.compile(r"^Throughput: ([0-9.,]+) samples")
 
         for line in output.split("\n"):
             match_loss = match_loss_re.search(line)
@@ -122,6 +129,8 @@ class SubProcessChecker(unittest.TestCase):
             self.fail(f"The losses do not seem reasonable.")
         # the loss should converge to ln(2) (coinflip)
         if not min_expected_loss < losses[-1] < max_expected_loss:
-            self.fail(f"The loss is not converging to the desired value.\n"
-                      f"Achieved loss {losses[-1]},"
-                      f" expected between {min_expected_loss} and {max_expected_loss}")
+            self.fail(
+                f"The loss is not converging to the desired value.\n"
+                f"Achieved loss {losses[-1]},"
+                f" expected between {min_expected_loss} and {max_expected_loss}"
+            )

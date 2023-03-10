@@ -15,7 +15,7 @@ from model.encoders import base_encoder
 class TestBaseEncoder:
     @classmethod
     def setup_class(cls):
-        policy = mixed_precision.Policy('mixed_float16')
+        policy = mixed_precision.Policy("mixed_float16")
         mixed_precision.set_global_policy(policy)
 
         config = ipu.config.IPUConfig()
@@ -26,46 +26,51 @@ class TestBaseEncoder:
         cls.encoder = None
 
     def create_encoder(
-            self,
-            n_embedding_channels=56,
-            encoder_dropout_rate=0.1,
-            node_latent=128,
-            edge_latent=32,
-            encoder_latent=32,
-            global_latent=32,
+        self,
+        n_embedding_channels=56,
+        encoder_dropout_rate=0.1,
+        node_latent=128,
+        edge_latent=32,
+        encoder_latent=32,
+        global_latent=32,
     ):
         # Features
         shape = (16, 41, 9)
         self.shape = shape
         self.inputs = {
-            "node_feat":
-            tf.keras.Input(shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)),
-            "edge_feat":
-            tf.keras.Input(shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)),
-            "lap_eig_vecs":
-            tf.keras.Input(shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)),
-            "lap_eig_vals":
-            tf.keras.Input(shape=(16, 41, 9, 1),
-                           dtype=tf.int32,
-                           tensor=tf.constant(np.ones((16, 41, 9, 1)), dtype=tf.int32)),
-            "random_walk_landing_probs":
-            tf.keras.Input(shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)),
-            "receivers":
-            tf.keras.Input(shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)),
-            "senders":
-            tf.keras.Input(shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)),
-            "node_graph_idx":
-            tf.keras.Input(shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)),
-            "edge_graph_idx":
-            tf.keras.Input(shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)),
-            "shortest_path_distances":
-            tf.keras.Input(shape=shape,
-                           dtype=tf.int32,
-                           tensor=tf.constant(np.ones((shape[0], shape[1], shape[1])), dtype=tf.int32)),
+            "node_feat": tf.keras.Input(
+                shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)
+            ),
+            "edge_feat": tf.keras.Input(
+                shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)
+            ),
+            "lap_eig_vecs": tf.keras.Input(
+                shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)
+            ),
+            "lap_eig_vals": tf.keras.Input(
+                shape=(16, 41, 9, 1), dtype=tf.int32, tensor=tf.constant(np.ones((16, 41, 9, 1)), dtype=tf.int32)
+            ),
+            "random_walk_landing_probs": tf.keras.Input(
+                shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)
+            ),
+            "receivers": tf.keras.Input(
+                shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)
+            ),
+            "senders": tf.keras.Input(shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)),
+            "node_graph_idx": tf.keras.Input(
+                shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)
+            ),
+            "edge_graph_idx": tf.keras.Input(
+                shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones(shape), dtype=tf.int32)
+            ),
+            "shortest_path_distances": tf.keras.Input(
+                shape=shape, dtype=tf.int32, tensor=tf.constant(np.ones((shape[0], shape[1], shape[1])), dtype=tf.int32)
+            ),
         }
 
         def f_x(latent):
             from model.gnn.layers import Dense
+
             return Dense(latent)
 
         get_default_node_mlp = lambda node_latent: f_x(node_latent)
@@ -97,12 +102,15 @@ class TestBaseEncoder:
         assert self.encoder.random_walk_encodings
 
     @pytest.mark.parametrize(
-        "n_embedding_channels, encoder_dropout_rate, node_latent, edge_latent, encoder_latent, global_latent", [
+        "n_embedding_channels, encoder_dropout_rate, node_latent, edge_latent, encoder_latent, global_latent",
+        [
             (56, 0.1, 128, 128, 128, 128),
             (9, 0.1, 64, 256, 16, 8),
-        ])
-    def test_basic_encoder(self, n_embedding_channels, encoder_dropout_rate, node_latent, edge_latent, encoder_latent,
-                           global_latent):
+        ],
+    )
+    def test_basic_encoder(
+        self, n_embedding_channels, encoder_dropout_rate, node_latent, edge_latent, encoder_latent, global_latent
+    ):
         self.create_encoder(
             n_embedding_channels=n_embedding_channels,
             encoder_dropout_rate=encoder_dropout_rate,

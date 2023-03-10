@@ -44,7 +44,7 @@ def get_random_walk_landing_probs(edges, num_nodes, k_steps=[1], edge_weights=No
     random_walks = []
     for k in k_steps:
         res = np.linalg.matrix_power(P, k)
-        res = np.diagonal(res, axis1=-2, axis2=-1) * (k**(space_dim / 2))
+        res = np.diagonal(res, axis1=-2, axis2=-1) * (k ** (space_dim / 2))
         random_walks.append(res)
 
     random_walk_landing_probs = np.vstack(random_walks)
@@ -56,6 +56,7 @@ def get_random_walk_landing_probs(edges, num_nodes, k_steps=[1], edge_weights=No
 
 
 def get_random_walk_landing_probs_from_dataset(dataset_item, item_options):
-    random_walk_landing_probs = get_random_walk_landing_probs(dataset_item["edge_index"], dataset_item["num_nodes"],
-                                                              **item_options)
-    return (random_walk_landing_probs, )
+    random_walk_landing_probs = get_random_walk_landing_probs(
+        dataset_item["edge_index"], dataset_item["num_nodes"], **item_options
+    )
+    return (random_walk_landing_probs,)

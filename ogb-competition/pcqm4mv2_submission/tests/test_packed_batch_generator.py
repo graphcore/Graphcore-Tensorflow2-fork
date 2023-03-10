@@ -33,14 +33,14 @@ def test_packed_batch_generator():
             "pad_value": 0,
         },
         "node_graph_idx": {
-            "shape": (n_nodes_per_pack + 1, ),
+            "shape": (n_nodes_per_pack + 1,),
             "input_name": "node_graph_idx",
             "model_dtype": tf.int32,
             "input_dtype": tf.int32,
             "pad_value": 0,
         },
         "edge_graph_idx": {
-            "shape": (n_edges_per_pack, ),
+            "shape": (n_edges_per_pack,),
             "input_name": "edge_graph_idx",
             "model_dtype": tf.int32,
             "input_dtype": tf.int32,
@@ -50,16 +50,18 @@ def test_packed_batch_generator():
 
     dataset = GeneratedGraphData(total_num_graphs=2048, nodes_per_graph=24, edges_per_graph=50)
 
-    pbg = PackedBatchGenerator(n_packs_per_batch=n_packs_per_batch,
-                               n_epochs=1,
-                               n_graphs_per_pack=n_graphs_per_pack,
-                               n_nodes_per_pack=n_nodes_per_pack,
-                               n_edges_per_pack=n_edges_per_pack,
-                               noisy_nodes_noise_prob=0.05,
-                               noisy_edges_noise_prob=0.05,
-                               dataset=dataset,
-                               randomize=False,
-                               input_spec=input_spec)
+    pbg = PackedBatchGenerator(
+        n_packs_per_batch=n_packs_per_batch,
+        n_epochs=1,
+        n_graphs_per_pack=n_graphs_per_pack,
+        n_nodes_per_pack=n_nodes_per_pack,
+        n_edges_per_pack=n_edges_per_pack,
+        noisy_nodes_noise_prob=0.05,
+        noisy_edges_noise_prob=0.05,
+        dataset=dataset,
+        randomize=False,
+        input_spec=input_spec,
+    )
     ds = pbg.get_tf_dataset(repeat_num=10)
     all_batches = [batch for batch in ds]
     batch, ground_truth = all_batches[0]

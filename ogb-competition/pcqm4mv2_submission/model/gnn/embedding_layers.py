@@ -8,8 +8,8 @@ import logging
 class OneHotEmbedding(tf.keras.layers.Embedding):
     def call(self, inputs):
         dtype = backend.dtype(inputs)
-        if dtype != 'int32' and dtype != 'int64':
-            inputs = tf.cast(inputs, 'int32')
+        if dtype != "int32" and dtype != "int64":
+            inputs = tf.cast(inputs, "int32")
 
         one_hot = tf.one_hot(inputs, self.input_dim, dtype=self.compute_dtype)
         out = one_hot @ self.embeddings
@@ -21,7 +21,7 @@ class OneHotEmbedding(tf.keras.layers.Embedding):
 
 
 class MultiFeatureEncoder(tf.keras.layers.Layer):
-    def __init__(self, emb_dim, n_feature_dims, one_hot_embedding, name=''):
+    def __init__(self, emb_dim, n_feature_dims, one_hot_embedding, name=""):
         """
         For something like an atom, which has several categorical features,
           we build a learnable embedding by summing a looked-up embedding from each
@@ -37,7 +37,7 @@ class MultiFeatureEncoder(tf.keras.layers.Layer):
         embedding_fn = OneHotEmbedding if one_hot_embedding else tf.keras.layers.Embedding
         # one embedding table for each of the categorical feature dimensions
         self.embeddings = [embedding_fn(n, emb_dim) for n in n_feature_dims]
-        logging.info(f'Items in node/edge feature: {n_feature_dims}')
+        logging.info(f"Items in node/edge feature: {n_feature_dims}")
 
     def call(self, inputs, training=True):
         output = tf.zeros([*inputs.shape[:-1], self.emb_dim], dtype=self.compute_dtype)
@@ -48,16 +48,14 @@ class MultiFeatureEncoder(tf.keras.layers.Layer):
 
 
 class AtomEncoder(MultiFeatureEncoder):
-    def __init__(self, emb_dim, one_hot_embedding, atom_feature_dims, name='AtomEncoder'):
-        super().__init__(emb_dim=emb_dim,
-                         n_feature_dims=atom_feature_dims,
-                         one_hot_embedding=one_hot_embedding,
-                         name=name)
+    def __init__(self, emb_dim, one_hot_embedding, atom_feature_dims, name="AtomEncoder"):
+        super().__init__(
+            emb_dim=emb_dim, n_feature_dims=atom_feature_dims, one_hot_embedding=one_hot_embedding, name=name
+        )
 
 
 class BondEncoder(MultiFeatureEncoder):
-    def __init__(self, emb_dim, one_hot_embedding, bond_feature_dims, name='BondEncoder'):
-        super().__init__(emb_dim=emb_dim,
-                         n_feature_dims=bond_feature_dims,
-                         one_hot_embedding=one_hot_embedding,
-                         name=name)
+    def __init__(self, emb_dim, one_hot_embedding, bond_feature_dims, name="BondEncoder"):
+        super().__init__(
+            emb_dim=emb_dim, n_feature_dims=bond_feature_dims, one_hot_embedding=one_hot_embedding, name=name
+        )
