@@ -1,11 +1,13 @@
 #!/bin/bash
 
+set -x
+
 symlink-public-resources() {
     public_source_dir=${1}
     target_dir=${2}
 
     # need to wait until the dataset has been mounted (async on Paperspace's end)
-    while [ ! -d ${public_source_dir} ]
+    while [ ! -d ${public_source_dir} ] || [ -z "$(ls -A ${public_source_dir})" ]
     do
         echo "Waiting for dataset "${public_source_dir}" to be mounted..."
         sleep 1
@@ -51,6 +53,7 @@ cd -
 echo "Finished running setup.sh."
 # Run automated test if specified
 if [[ "$1" == "test" ]]; then
+
     bash /notebooks/.gradient/automated-test.sh "${@:2}"
 elif [[ "$2" == "test" ]]; then
     bash /notebooks/.gradient/automated-test.sh "${@:3}"
