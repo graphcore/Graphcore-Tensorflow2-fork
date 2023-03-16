@@ -12,18 +12,18 @@ fi
 export NUM_AVAILABLE_IPU=${IPU_ARG}
 export GRAPHCORE_POD_TYPE="pod${IPU_ARG}"
 export POPLAR_EXECUTABLE_CACHE_DIR="/tmp/exe_cache"
-export DATASET_DIR="/tmp/dataset_cache"
+export DATASETS_DIR="/tmp/dataset_cache"
 export CHECKPOINT_DIR="/tmp/checkpoints"
 
 
 # mounted public dataset directory (path in the container)
 # in the Paperspace environment this would be ="/datasets"
-export PUBLIC_DATASET_DIR="/datasets"
+export PUBLIC_DATASETS_DIR="/datasets"
 
 export TF_POPLAR_FLAGS='--executable_cache_path='${POPLAR_EXECUTABLE_CACHE_DIR}''
 
 # Environment variables customised for OGB notebooks
-export OGB_DATASET_DIR="${DATASET_DIR}/ogb_lsc_pcqm4mv2/datasets"
+export OGB_DATASETS_DIR="${DATASETS_DIR}/ogb_lsc_pcqm4mv2/datasets"
 export OGB_CHECKPOINT_DIR="${CHECKPOINT_DIR}/ogb_lsc_pcqm4mv2/checkpoints"
 export OGB_SUBMISSION_CODE="./pcqm4mv2_submission"
 
