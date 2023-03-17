@@ -1,7 +1,5 @@
 #! /usr/bin/env bash 
-set -u 
-set -o pipefail
-set -x 
+set -uxo pipefail
 
 if [ ! "$(command -v fuse-overlayfs)" ]
 then
@@ -12,9 +10,8 @@ fi
 
 
 echo "Starting preparation of datasets"
-cd "$(dirname "$0")"
-python -u ./symlink_datasets_and_caches.py
-cd -
+/notebooks/.gradient/symlink_datasets_and_caches.py
+
 
 # Make the custom ops for the OGB notebooks
 python -m pip install -r /notebooks/ogb-competition/requirements.txt
@@ -26,8 +23,8 @@ cd -
 
 echo "Finished running setup.sh."
 # Run automated test if specified
-if [[ "${1:-}" == "test" ]]; then
-    bash /notebooks/.gradient/automated-test.sh "${@:2}"
-elif [[ "${2:-}" == "test" ]]; then
-    bash /notebooks/.gradient/automated-test.sh "${@:3}"
+if [[ "${1:-}" == 'test' ]]; then
+    /notebooks/.gradient/automated-test.sh "${@:2}"
+elif [[ "${2:-}" == 'test' ]]; then
+    /notebooks/.gradient/automated-test.sh "${@:3}"
 fi
