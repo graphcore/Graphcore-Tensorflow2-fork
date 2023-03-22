@@ -35,7 +35,7 @@ fi
 echo "Starting preparation of datasets"
 
 # symlink exe_cache files
-symlink-public-resources "${PUBLIC_DATASETS_DIR}/poplar-executables-tf2-3-1" $POPLAR_EXECUTABLE_CACHE_DIR
+symlink-public-resources "${PUBLIC_DATASETS_DIR}/poplar-executables-tf2-3-2" $POPLAR_EXECUTABLE_CACHE_DIR
 # symlink ogbn_arxiv dataset for cluster gcn notebook
 symlink-public-resources "${PUBLIC_DATASETS_DIR}/ogbn_arxiv" "${DATASETS_DIR}/ogbn_arxiv"
 # symlink OGB-specific folders
