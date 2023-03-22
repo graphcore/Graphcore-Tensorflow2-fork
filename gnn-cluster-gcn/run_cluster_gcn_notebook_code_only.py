@@ -87,7 +87,7 @@ universal_run_name = (
 )
 logging.info(f"Universal name for run: {universal_run_name}")
 
-config.data_path = os.getenv("DATASET_DIR", "/localdata/paperspace/graph_datasets/")
+config.data_path = os.getenv("DATASETS_DIR", "/localdata/paperspace/graph_datasets/") 
 
 dataset = load_dataset(
     dataset_path=config.data_path,

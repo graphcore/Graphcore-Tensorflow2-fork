@@ -172,7 +172,7 @@ logging.info(f"Universal name for run: {universal_run_name}")
 
 We are now ready to load the dataset. We only have to introduce the path to the dataset. This path will be used to look for available preprocessed data and cached clustering results.
 """
-config.data_path = os.getenv("DATASET_DIR", "/localdata/paperspace/graph_datasets/")
+config.data_path = os.getenv("DATASETS_DIR", "/localdata/paperspace/graph_datasets/") 
 
 """
 """

@@ -35,12 +35,12 @@ fi
 echo "Starting preparation of datasets"
 
 # symlink exe_cache files
-symlink-public-resources "${PUBLIC_DATASET_DIR}/poplar-executables-tf2-3-1" $POPLAR_EXECUTABLE_CACHE_DIR
+symlink-public-resources "${PUBLIC_DATASETS_DIR}/poplar-executables-tf2-3-1" $POPLAR_EXECUTABLE_CACHE_DIR
 # symlink ogbn_arxiv dataset for cluster gcn notebook
-symlink-public-resources "${PUBLIC_DATASET_DIR}/ogbn_arxiv" "${DATASET_DIR}/ogbn_arxiv"
+symlink-public-resources "${PUBLIC_DATASETS_DIR}/ogbn_arxiv" "${DATASETS_DIR}/ogbn_arxiv"
 # symlink OGB-specific folders
-symlink-public-resources "${PUBLIC_DATASET_DIR}/ogb_lsc_pcqm4mv2/datasets" "${OGB_DATASET_DIR}"
-symlink-public-resources "${PUBLIC_DATASET_DIR}/ogb_lsc_pcqm4mv2/checkpoints" "${OGB_CHECKPOINT_DIR}"
+symlink-public-resources "${PUBLIC_DATASETS_DIR}/ogb_lsc_pcqm4mv2/datasets" "${OGB_DATASETS_DIR}"
+symlink-public-resources "${PUBLIC_DATASETS_DIR}/ogb_lsc_pcqm4mv2/checkpoints" "${OGB_CHECKPOINT_DIR}"
 
 # Make the custom ops for the OGB notebooks
 python -m pip install -r /notebooks/ogb-competition/requirements.txt
