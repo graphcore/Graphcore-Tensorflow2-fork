@@ -1,0 +1,6 @@
+{
+    "${POPLAR_EXECUTABLE_CACHE_DIR}":["${PUBLIC_DATASETS_DIR}/poplar-executables-tf2-3-2"],
+    "${DATASETS_DIR}/ogbn_arxiv":["${PUBLIC_DATASETS_DIR}/ogbn_arxiv"],
+    "${OGB_DATASETS_DIR}":["${PUBLIC_DATASETS_DIR}/ogb_lsc_pcqm4mv2/datasets"],
+    "${OGB_CHECKPOINT_DIR}":["${PUBLIC_DATASETS_DIR}/ogb_lsc_pcqm4mv2/checkpoints"]
+}
