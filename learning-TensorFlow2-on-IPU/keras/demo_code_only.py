@@ -102,9 +102,7 @@ test_data_len = make_divisible(test_data_len, batch_size)
 x_test, y_test = x_test[:test_data_len], y_test[:test_data_len]
 
 ipu_config = ipu.config.IPUConfig()
-ipu_config.device_connection.type = (
-    ipu.config.DeviceConnectionType.ON_DEMAND
-)  # Optional - allows parallel execution
+ipu_config.device_connection.type = ipu.config.DeviceConnectionType.ON_DEMAND  # Optional - allows parallel execution
 ipu_config.auto_select_ipus = 1
 ipu_config.configure_ipu_system()
 
@@ -221,18 +219,14 @@ gradient_accumulation_steps_per_replica = 8
 train_data_len = x_train.shape[0]
 train_steps_per_execution = train_data_len // (batch_size * num_replicas)
 # `steps_per_execution` needs to be divisible by `gradient_accumulation_steps_per_replica`
-train_steps_per_execution = make_divisible(
-    train_steps_per_execution, gradient_accumulation_steps_per_replica
-)
+train_steps_per_execution = make_divisible(train_steps_per_execution, gradient_accumulation_steps_per_replica)
 train_data_len = make_divisible(train_data_len, train_steps_per_execution * batch_size)
 x_train, y_train = x_train[:train_data_len], y_train[:train_data_len]
 
 test_data_len = x_test.shape[0]
 test_steps_per_execution = test_data_len // (batch_size * num_replicas)
 # `steps_per_execution` needs to be divisible by `gradient_accumulation_steps_per_replica`
-test_steps_per_execution = make_divisible(
-    test_steps_per_execution, gradient_accumulation_steps_per_replica
-)
+test_steps_per_execution = make_divisible(test_steps_per_execution, gradient_accumulation_steps_per_replica)
 test_data_len = make_divisible(test_data_len, test_steps_per_execution * batch_size)
 x_test, y_test = x_test[:test_data_len], y_test[:test_data_len]
 

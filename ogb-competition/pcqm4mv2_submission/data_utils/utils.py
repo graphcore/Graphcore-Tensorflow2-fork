@@ -8,7 +8,7 @@ def apply_categorical_feature_noise(features: tf.int32, vocab_sizes, noise_prob)
     random_category = tf.random.uniform(features.get_shape().as_list(), maxval=1)
     random_category = tf.cast(tf.floor(random_category * vocab_sizes), features.dtype)
 
-    sample_or_not = tf.random.uniform(features.get_shape().as_list(), maxval=1.) < noise_prob
+    sample_or_not = tf.random.uniform(features.get_shape().as_list(), maxval=1.0) < noise_prob
     noisy_features = tf.where(sample_or_not, random_category, features)
     return noisy_features
 
@@ -26,11 +26,11 @@ def weighted_sample(weights, n_samples):
 def normalize_ogbBL(values_to_normalize, method):
     ogb_BL_mean = 3.581247
     ogb_BL_std = 0.6618104
-    if method == 'z_score':
+    if method == "z_score":
         norm_values = (values_to_normalize - ogb_BL_mean) / ogb_BL_std
-    elif method == 'std_only':
+    elif method == "std_only":
         norm_values = values_to_normalize / (2 * ogb_BL_std)
-    elif method == 'mean_only':
+    elif method == "mean_only":
         norm_values = values_to_normalize / (2 * ogb_BL_mean)
     else:
         norm_values = values_to_normalize
@@ -40,11 +40,11 @@ def normalize_ogbBL(values_to_normalize, method):
 def normalize_atom_distances(values_to_normalize, method):
     mean = 3.6966338
     std = 2.1563308
-    if method == 'z_score':
+    if method == "z_score":
         norm_values = (values_to_normalize - mean) / std
-    elif method == 'std_only':
+    elif method == "std_only":
         norm_values = values_to_normalize / (2 * std)
-    elif method == 'mean_only':
+    elif method == "mean_only":
         norm_values = values_to_normalize / (2 * mean)
     else:
         norm_values = values_to_normalize

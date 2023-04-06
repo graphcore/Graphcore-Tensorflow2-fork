@@ -2,20 +2,21 @@
 
 An optimised hybrid GNN/Transformer model for molecular property prediction using Graphcore IPUs, trained on the [PCQM4Mv2](https://arxiv.org/abs/2103.09430) dataset. The flexible hybrid model closely follows the [General, Powerful, Scalable (GPS) framework](https://arxiv.org/abs/2205.12454) and combines the benefits of both message passing and attention layers for graph-structured input data training.
 
-## Running the model [![Gradient](https://assets.paperspace.io/img/gradient-badge.svg)](https://console.paperspace.com/github/graphcore/ogb-lsc-pcqm4mv2?machine=Free-IPU-POD16&container=graphcore%2Ftensorflow-jupyter%3Aogb-competition-2022-11-21&file=%2Fnotebook_inference.ipynb)
+## Running the model [![Gradient](https://assets.paperspace.io/img/gradient-badge.svg)](https://ipu.dev/3CGjC5E)
 
 ### Setup
 
 This model is optimised for Graphcore IPUs and requires the Graphcore's Poplar SDK to run. You can access IPUs through [Paperspace](https://www.paperspace.com/graphcore), using the button above, or [G-Core](https://gcore.com/partners/graphcore).
 
-#### Running on Paperspace
-
-The Paperspace environment lets you run this notebook with no set up. To improve your experience we preload datasets and pre-install packages, this can take a few minutes, if you experience errors immediately after starting a session please try restarting the kernel before contacting support. If a problem persists or you want to give us feedback on the content of this notebook, please reach out to through our community of developers using our [slack channel](https://www.graphcore.ai/join-community) or raise a [GitHub issue](https://github.com/gradient-ai/Graphcore-Tensorflow2/issues).
-
-
-Install the requirements:
+Create a virtual environment and install the Poplar SDK, including the TensorFlow 2 wheels from inside the SDK directory:
 
 ```shell
+virtualenv --python python3.6 .gps_venv
+source .gps_venv/bin/activate
+source <path to the Graphcore SDK>/enable
+pip install <path to the TensorFlow-2 wheel from the Poplar SDK>
+pip install --force-reinstall --no-deps <path to the Keras wheel from the Poplar SDK>
+pip install <path to the ipu_tensorflow_addons wheel for TensorFlow 2 from the Poplar SDK>
 pip install -r requirements.txt
 ```
 
@@ -41,6 +42,13 @@ The dataset consists of 3.7 million molecules defined by their SMILES strings wh
 The dataset includes four splits: train, valid, test-challenge and test-dev. The train and valid splits have true label and can be used for model development. The test-challenge split is used for the OGB-LSC PCQM4Mv2 challenge submission and test-dev for the [leaderboard](https://ogb.stanford.edu/docs/lsc/leaderboards/#pcqm4mv2) submission.
 
 At the start of training, the dataset will be downloaded and the additional features will be preprocessed automatically, including the 3D molecular features that are provided with the dataset.
+
+We provide alternative dataset splits which will need to be downloaded and unpacked in this directory prior to running the application:
+
+```bash
+wget https://graphcore-ogblsc-pcqm4mv2.s3.us-west-1.amazonaws.com/pcqm4mv2-cross_val_splits.tar.gz
+tar xvzf pcqm4mv2-cross_val_splits.tar.gz
+```
 
 ### Training and inference on OGB-LSC PCQM4Mv2
 

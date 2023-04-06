@@ -11,9 +11,7 @@ def create_tensorboard_log_dir():
     # Ensure we have the top level /tmp directory first.
     path = "/tmp"
     if not os.path.isdir(path):
-        raise RuntimeError(
-            f"Unable to locate {path} directory. Are you running on a Unix-like OS?"
-        )
+        raise RuntimeError(f"Unable to locate {path} directory. Are you running on a Unix-like OS?")
 
     # Delete the log directory, if it exists.
     path += "/tensorboard_example_logs"
@@ -121,9 +119,7 @@ class FilterRenderCallback(StaggeredCallback):
         filters_collapsed = tf.reshape(filters_norm, shape)
 
         # Split into a list of N DxD filters.
-        filters_split = tf.experimental.numpy.dsplit(
-            filters_collapsed, filters_collapsed.shape[-1]
-        )
+        filters_split = tf.experimental.numpy.dsplit(filters_collapsed, filters_collapsed.shape[-1])
 
         # Find the width and height of the resulting image, not in pixels but
         # in the number of filters to display in each dimension.
@@ -134,9 +130,7 @@ class FilterRenderCallback(StaggeredCallback):
         rows = []
         for _ in range(WH):
             # Collect the filters for this row.
-            row_images = [
-                tf.squeeze(t) for t in filters_split[filter_num : filter_num + WH]
-            ]
+            row_images = [tf.squeeze(t) for t in filters_split[filter_num : filter_num + WH]]
 
             # Generate vertical padding to be used between filters.
             col_padding = [tf.zeros((filters.shape[0], 1))] * WH
@@ -195,16 +189,10 @@ def create_datasets(train_validate_split=0.8, num_to_prefetch=16):
         x = np.expand_dims(x, -1) / 255.0
 
         # Shuffle and batch.
-        ds = (
-            tf.data.Dataset.from_tensor_slices((x, y))
-            .shuffle(10000)
-            .batch(32, drop_remainder=True)
-        )
+        ds = tf.data.Dataset.from_tensor_slices((x, y)).shuffle(10000).batch(32, drop_remainder=True)
 
         # Cast and convert targets to one-hot representation.
-        ds = ds.map(
-            lambda d, l: (tf.cast(d, tf.float32), tf.cast(tf.one_hot(l, 10), tf.int32))
-        )
+        ds = ds.map(lambda d, l: (tf.cast(d, tf.float32), tf.cast(tf.one_hot(l, 10), tf.int32)))
 
         return ds
 
@@ -234,18 +222,12 @@ def create_model():
             # Input layers do not get assigned an IPU pipeline stage.
             tf.keras.layers.Input((28, 28, 1)),
             # Pipeline stage 0.
-            tf.keras.layers.Conv2D(
-                32, kernel_size=(3, 3), activation="relu", name="conv_0"
-            ),
+            tf.keras.layers.Conv2D(32, kernel_size=(3, 3), activation="relu", name="conv_0"),
             tf.keras.layers.MaxPooling2D(pool_size=(2, 2), name="pool_0"),
-            tf.keras.layers.Conv2D(
-                64, kernel_size=(3, 3), activation="relu", name="conv_1"
-            ),
+            tf.keras.layers.Conv2D(64, kernel_size=(3, 3), activation="relu", name="conv_1"),
             tf.keras.layers.MaxPooling2D(pool_size=(2, 2), name="pool_1"),
             # Pipeline stage 1.
-            tf.keras.layers.Conv2D(
-                32, kernel_size=(3, 3), activation="relu", name="conv_2"
-            ),
+            tf.keras.layers.Conv2D(32, kernel_size=(3, 3), activation="relu", name="conv_2"),
             tf.keras.layers.MaxPooling2D(pool_size=(2, 2), name="pool_2"),
             tf.keras.layers.Flatten(),
             tf.keras.layers.Dropout(0.5),

@@ -75,7 +75,7 @@ def safe_inv(in_array):
 
 
 def edges_to_dense_adjacency(edges, num_nodes):
-    adj = sp.csr_matrix((np.ones((edges.shape[1])), (edges[0, :], edges[1, :])),
-                        shape=(num_nodes, num_nodes),
-                        dtype=np.int32)
+    adj = sp.csr_matrix(
+        (np.ones((edges.shape[1])), (edges[0, :], edges[1, :])), shape=(num_nodes, num_nodes), dtype=np.int32
+    )
     return adj.toarray()

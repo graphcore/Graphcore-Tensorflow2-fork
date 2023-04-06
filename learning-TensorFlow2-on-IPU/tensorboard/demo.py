@@ -31,7 +31,7 @@ of this tutorial to be on the use of TensorBoard.
 The Paperspace environment lets you run this notebook with no set up. To improve your experience we preload datasets and pre-install packages, this can take a few minutes, if you experience errors immediately after starting a session please try restarting the kernel before contacting support. If a problem persists or you want to give us feedback on the content of this notebook, please reach out to through our community of developers using our [slack channel](https://www.graphcore.ai/join-community) or raise a [GitHub issue](https://github.com/gradient-ai/Graphcore-Tensorflow2/issues).]
 
 To run the code in this tutorial there are two basic requirements.
-- Python packages installed with `python -m pip install -r requirements.txt`
+packages installed with `python -m pip install -r requirements.txt`
 """
 # %pip install -q -r requirements.txt
 # sst_ignore_md
@@ -39,6 +39,7 @@ To run the code in this tutorial there are two basic requirements.
 """
 ## Introduction to TensorBoard and Data Logging
 ### How does TensorBoard work?
+
 TensorBoard itself runs independently of any TensorFlow processes, so starting
 and stopping TensorBoard does not affect any TensorFlow processes that may be
 running. The reason that TensorBoard and TensorFlow are independent in this way
@@ -52,6 +53,7 @@ TensorBoard running and ready to start displaying data from your TensorFlow
 program is as simple as just starting the Daemon.
 
 ## How do I launch TensorBoard?
+
 If we go ahead and enter `tensorboard` into a terminal (on a machine that has a
 TensorFlow installation and `tensorboard` on your path), you will notice the
 following error.
@@ -82,11 +84,13 @@ choice), you should see the blank (no logged data) TensorBoard interface.
 
 ![Alt Text](figures/BlankSession.png "Blank TensorBoard Session")
 
-### TensorBoard on a Remote Machine
+### TensorBoard on a remote machine
+
 If you use a remote machine for your TensorFlow development, then there are a
 couple of options for accessing TensorBoard remotely.
 
-#### SSH Tunnelling
+#### SSH tunnelling
+
 The first (and more secure) approach is to setup an SSH tunnel to your remote
 machine, binding the remote TensorBoard port to a local port on your machine.
 For example, to setup a tunnel that binds the TensorBoard port `6006` to port
@@ -100,12 +104,14 @@ ssh -L 6006:localhost:6006 <your-username>@<your-server>
 In this example, navigating with your web browser to `localhost:6006` should
 yield the screen shown above.
 
-#### Exposing TensorBoard to the Network
+#### Exposing TensorBoard to the network
+
 Alternatively, if you are on a secure network, you may start TensorBoard with
 the `--bind_all` argument, which will allow access on the port used (`6006` in
 this example) from within the machines subnet.
 
-### Automatically Handling Log Directory Cleansing
+### Automatically handling log directory cleansing
+
 When developing a TensorFlow program it may sometimes be desirable to clear the
 current data displayed by TensorBoard and start fresh. Below is a simple
 function to handle this clean-up for us. The function
@@ -124,9 +130,7 @@ def create_tensorboard_log_dir():
     # Ensure we have the top level /tmp directory first.
     path = "/tmp"
     if not os.path.isdir(path):
-        raise RuntimeError(
-            f"Unable to locate {path} directory. Are you running on a Unix-like OS?"
-        )
+        raise RuntimeError(f"Unable to locate {path} directory. Are you running on a Unix-like OS?")
 
     # Delete the log directory, if it exists.
     path += "/tensorboard_example_logs"
@@ -146,7 +150,8 @@ def create_tensorboard_log_dir():
 
 
 """
-## Logging Data with `tf.keras.callbacks.Callback`
+## Logging data with `tf.keras.callbacks.Callback`
+
 When using a `tf.keras.Model` or `tf.keras.Sequential` model (as we have above)
 we have access to three main APIs: `fit`, `evaluate` and `predict`. These APIs
 take an optional `callbacks` parameter, which is a list of
@@ -194,7 +199,8 @@ overridden.
   - `on_epoch_begin(self, epoch, logs=None)`
   - `on_epoch_end(self, epoch, logs=None)`
 
-### Running Evaluation at the end of an Epoch
+### Running evaluation at the end of an epoch
+
 We shall now write a simple callback to perform a full evaluation every $n$
 training epochs. As we wish to perform an action at the end of an epoch, we
 shall override the `on_epoch_end` handler.
@@ -260,7 +266,7 @@ when writing custom code to output data to TensorBoard. Within `tf.summary` are
 many ops that are used to log out various types of data when invoked within the
 context of a `tf.summary.SummaryWriter` (`self._writer` in our example).
 
-With this in mind, we can turn our attention to the usage of `res`, the return
+With this in mind, we can turn our attention to the use of `res`, the return
 value of our call to `self._model.evaluate` (note the keyword argument
 `return_dict=True`). Within the context of `self._writer.as_default()` we
 iterate over each of the specified losses and metrics and write them out as
@@ -268,7 +274,8 @@ scalar data (note the call to `tf.summary.scalar`). This logged data is then
 available within the TensorBoard log directory for the running TensorBoard
 instance to display.
 
-### Supported Data Types in `tf.summary`
+### Supported data types in `tf.summary`
+
 Within `tf.summary` there are many ops supporting a variety of data types that
 can be logged, including the following.
 
@@ -279,7 +286,8 @@ can be logged, including the following.
   - `audio`
   - `graph`
 
-### Logging Custom Image Data at the end of an Epoch
+### Logging custom image data at the end of an epoch
+
 Now that we have seen how to build a basic `tf.keras.callbacks.Callback`
 derived class to run an evaluation pass at the end of every $n^{th}$ epoch, we
 may move on to build an example of logging out image data. As we will be
@@ -337,9 +345,7 @@ class FilterRenderCallback(StaggeredCallback):
         filters_collapsed = tf.reshape(filters_norm, shape)
 
         # Split into a list of N DxD filters.
-        filters_split = tf.experimental.numpy.dsplit(
-            filters_collapsed, filters_collapsed.shape[-1]
-        )
+        filters_split = tf.experimental.numpy.dsplit(filters_collapsed, filters_collapsed.shape[-1])
 
         # Find the width and height of the resulting image, not in pixels but
         # in the number of filters to display in each dimension.
@@ -350,9 +356,7 @@ class FilterRenderCallback(StaggeredCallback):
         rows = []
         for _ in range(WH):
             # Collect the filters for this row.
-            row_images = [
-                tf.squeeze(t) for t in filters_split[filter_num : filter_num + WH]
-            ]
+            row_images = [tf.squeeze(t) for t in filters_split[filter_num : filter_num + WH]]
 
             # Generate vertical padding to be used between filters.
             col_padding = [tf.zeros((filters.shape[0], 1))] * WH
@@ -421,6 +425,7 @@ Notice that the process for logging image data is near identical to the
 `tf.summary.scalar` case in `EvaluateCallback.on_epoch_end`.
 
 ### Using `tf.keras.callbacks.TensorBoard`
+
 Now that we have seen how `tf.keras.callbacks.Callback` works and how we can
 derive from it to define our own custom callbacks, we shall have a brief look
 at `tf.keras.callbacks.TensorBoard`, which is a built in callback to allow
@@ -432,7 +437,8 @@ instance of `tf.keras.callbacks.TensorBoard` and passing it in the callback
 list to a Keras model. We shall see in a later section, once we have started
 training our model the information generated by this callback.
 
-## Model Setup & Data Preparation
+## Model setup and data preparation
+
 For the example we shall develop in this tutorial, we wish to obtain three
 MNIST datasets; training, validation and test datasets are extracted from
 `tf.keras.datasets.mnist`. Below we define a function `create_datasets` that
@@ -468,16 +474,10 @@ def create_datasets(train_validate_split=0.8, num_to_prefetch=16):
         x = np.expand_dims(x, -1) / 255.0
 
         # Shuffle and batch.
-        ds = (
-            tf.data.Dataset.from_tensor_slices((x, y))
-            .shuffle(10000)
-            .batch(32, drop_remainder=True)
-        )
+        ds = tf.data.Dataset.from_tensor_slices((x, y)).shuffle(10000).batch(32, drop_remainder=True)
 
         # Cast and convert targets to one-hot representation.
-        ds = ds.map(
-            lambda d, l: (tf.cast(d, tf.float32), tf.cast(tf.one_hot(l, 10), tf.int32))
-        )
+        ds = ds.map(lambda d, l: (tf.cast(d, tf.float32), tf.cast(tf.one_hot(l, 10), tf.int32)))
 
         return ds
 
@@ -509,7 +509,8 @@ as a target, $[0, 1 \dots 9]$
 
 So, we see that we have a very straightforward classification problem.
 
-## Model Definition
+## Model definition
+
 As MNIST classification is a reasonably trivial task, only a modest complexity
 model is required. The function that follows (`create_model`) will generate a
 `tf.keras.Sequential` instance with the following layers. Note that the IPU
@@ -538,18 +539,12 @@ def create_model():
             # Input layers do not get assigned an IPU pipeline stage.
             tf.keras.layers.Input((28, 28, 1)),
             # Pipeline stage 0.
-            tf.keras.layers.Conv2D(
-                32, kernel_size=(3, 3), activation="relu", name="conv_0"
-            ),
+            tf.keras.layers.Conv2D(32, kernel_size=(3, 3), activation="relu", name="conv_0"),
             tf.keras.layers.MaxPooling2D(pool_size=(2, 2), name="pool_0"),
-            tf.keras.layers.Conv2D(
-                64, kernel_size=(3, 3), activation="relu", name="conv_1"
-            ),
+            tf.keras.layers.Conv2D(64, kernel_size=(3, 3), activation="relu", name="conv_1"),
             tf.keras.layers.MaxPooling2D(pool_size=(2, 2), name="pool_1"),
             # Pipeline stage 1.
-            tf.keras.layers.Conv2D(
-                32, kernel_size=(3, 3), activation="relu", name="conv_2"
-            ),
+            tf.keras.layers.Conv2D(32, kernel_size=(3, 3), activation="relu", name="conv_2"),
             tf.keras.layers.MaxPooling2D(pool_size=(2, 2), name="pool_2"),
             tf.keras.layers.Flatten(),
             tf.keras.layers.Dropout(0.5),
@@ -559,7 +554,8 @@ def create_model():
 
 
 """
-## Model Training
+## Model training
+
 We shall now proceed to build and train our model so that we have some data to
 view in TensorBoard. As a recap, we have so far implemented the following
 "ingredients" of our example TensorFlow program.
@@ -661,13 +657,14 @@ with strategy.scope():
 """
 All of the above setup and training code is standard IPU TensorFlow operation
 and should be familiar to any user of
-[IPU TensorFlow](https://docs.graphcore.ai/projects/tensorflow-user-guide/en/3.0.0/tensorflow/intro.html).
+[IPU TensorFlow](https://docs.graphcore.ai/projects/tensorflow-user-guide/en/3.1.0/tensorflow/intro.html).
 However, special attention should be paid to the
 `set_asynchronous_callbacks(True)` call on our model `m`. This call allows the
 model to asynchronously trigger callbacks at the end of an epoch, versus
 queueing up callbacks to be executed at the end of the models execution.
 
 ## Exploring TensorBoard
+
 At this point, we should have a wealth of information available to explore in
 TensorBoard. So, go back to the previously empty TensorBoard dashboard we saw
 at the beginning of the tutorial and refresh the page. You will notice that the
@@ -679,6 +676,7 @@ We shall now look at the information available to us on each of the categories
 visible on the left of the navigation bar.
 
 ### Scalars
+
 The first and most immediately pertinent to training page we shall look at is
 that for scalar data. Scalar data when written with a `step` provided is
 plotted as a 2D graph (with `step` on the x axis). You should see a plot
@@ -729,6 +727,7 @@ $n$ epochs, where in our case $n=5$ for our `EvaluationCallback` instance.
 *If performance isn't a concern, perhaps the callback could be altered to compute a running mean over $n$ epochs? If not, take a moment to play with the smoothing coefficient in TensorBoard (slider to the left of the screen).*
 
 ### Images
+
 We shall now turn our attention to the Images page in TensorBoard. When using
 only the `tf.keras.callbacks.TensorBoard` callback, as will suffice in many
 scenarios, there will be no images written out, so this page will not be
@@ -755,6 +754,7 @@ the following additional images on this page.
 *Take a minute to play with the brightness and contrast settings on the left of the screen. Does it help you to identify any kind of structure in the weights?*
 
 ### Graphs
+
 The `tf.keras.callbacks.TensorBoard` callback provides a very useful data
 output; the model graph. On this page, you will see some computation modules.
 The Graphs page should look something like the following.
@@ -774,8 +774,10 @@ indicator in the lower right hand corner of the screen.
 
 *Perhaps it would be useful to take a few minutes to familiarise yourself with the Graphs page and it's controls.*
 
-### Distributions and Histograms
+### Distributions and histograms
+
 #### Distributions
+
 The Distributions page in TensorBoard is another useful source of information
 for inspecting your model. As with the model graph, the data displayed on the
 Distributions page is generated by the `tf.keras.callbacks.TensorBoard`
@@ -814,6 +816,7 @@ model, there should be plots for each remaining layer in our model.
   - dense
 
 #### Histograms
+
 The Histograms page provides an alternative view of the data presented in the
 Distributions page. It is the same data, just presented differently. For
 example, you should see two plots akin to the following, for our `conv_0`
@@ -830,7 +833,8 @@ the plots to see the outline for a given time-step.
 
 *Perhaps it would be useful to compare the data presented in these plots with those in the Distributions page? Do they correspond as one might expect?*
 
-## Time Series
+## Time series
+
 The final page in TensorBoard that we will cover in this tutorial is the Time
 Series page. On this page you will see no new information or plots, however you
 will find all of the plots we have seen already in one place with controls to
@@ -838,7 +842,8 @@ filter and move through time-steps. For example.
 
 ![Alt Text](figures/TimeSeriesPage.png "Time Series Page")
 
-## Using TensorBoard Without Keras
+## Using TensorBoard without Keras
+
 Although in this tutorial we have focused on the use of TensorBoard with Keras,
 it is entirely possible to log data out to TensorBoard without using Keras and
 `tf.keras.callbacks.Callback` instances. It just may involve some extra
@@ -848,8 +853,9 @@ of data is achieved by the use of ops within `tf.summary`.
 
 *As an exercise, try to de-Keras-ify this model whilst keeping the same level of TensorBoard insight.*
 
-## To Conclude
-In conclusion, we have looked at TensorBoard and how it may be used with IPU
+## Conclusions
+
+We have looked at TensorBoard and how it may be used with IPU
 TensorFlow. We have covered primarily the case in which we are using Keras,
 including how to write our own custom data logging callbacks via TensorFlow's
 summary ops (`tf.summary`). We have also seen the wealth of information

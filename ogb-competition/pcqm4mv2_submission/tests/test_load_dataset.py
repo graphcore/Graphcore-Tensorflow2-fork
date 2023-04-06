@@ -11,12 +11,14 @@ def test_generated_data_loader():
     edges_per_graph = 6
     node_feature_dims = np.array([119, 4, 12, 12, 10, 6, 6, 2, 2])
     edge_feature_dims = np.array([5, 6, 2])
-    dataset = GeneratedOGBGraphData(total_num_graphs=total_num_graphs,
-                                    node_feature_dims=node_feature_dims,
-                                    edge_feature_dims=edge_feature_dims,
-                                    nodes_per_graph=nodes_per_graph,
-                                    edges_per_graph=edges_per_graph,
-                                    labels_dtype=np.float32)
+    dataset = GeneratedOGBGraphData(
+        total_num_graphs=total_num_graphs,
+        node_feature_dims=node_feature_dims,
+        edge_feature_dims=edge_feature_dims,
+        nodes_per_graph=nodes_per_graph,
+        edges_per_graph=edges_per_graph,
+        labels_dtype=np.float32,
+    )
 
     assert len(dataset.graphs) == total_num_graphs
     assert len(dataset.labels) == total_num_graphs

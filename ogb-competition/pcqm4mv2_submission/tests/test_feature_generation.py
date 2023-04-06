@@ -33,7 +33,13 @@ from torch_geometric.utils import remove_self_loops
 from data_utils.feature_generation.generic_features import _preprocess_item_send_rcv
 from data_utils.feature_generation.laplacian_features import eigvec_normalizer, get_laplacian_features
 from data_utils.feature_generation.random_walk_features import edges_to_dense_adjacency, get_random_walk_landing_probs
-from data_utils.feature_generation.utils import get_in_degrees, get_out_degrees, normalize_edge_index, remove_self_loops, safe_inv
+from data_utils.feature_generation.utils import (
+    get_in_degrees,
+    get_out_degrees,
+    normalize_edge_index,
+    remove_self_loops,
+    safe_inv,
+)
 from data_utils.load_dataset import GeneratedGraphData, GeneratedOGBGraphData
 from data_utils.preprocess_dataset import preprocess_items
 
@@ -110,8 +116,12 @@ def test_normalize_edge_index():
     edge_index, edge_weight = normalize_edge_index(edge_index, edge_weight, deg, num_nodes)
 
     # Expected values with the self loops added
-    expected_edges = np.array([[0., 1., 1., 2., 0., 2., 3., 0., 1., 2., 3.],
-                               [1., 0., 2., 1., 2., 0., 3., 0., 1., 2., 3.]])
+    expected_edges = np.array(
+        [
+            [0.0, 1.0, 1.0, 2.0, 0.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0],
+            [1.0, 0.0, 2.0, 1.0, 2.0, 0.0, 3.0, 0.0, 1.0, 2.0, 3.0],
+        ]
+    )
     assert np.allclose(expected_edges, edge_index)
     assert np.allclose(t_edge_weight, edge_weight)
 
@@ -156,7 +166,7 @@ def test_get_in_degrees():
 
 def test_safe_inv():
     in_array = np.array([0, 1, 4, 0, 2])
-    expected_inv = np.array([0., 1., 0.25, 0., 0.5])
+    expected_inv = np.array([0.0, 1.0, 0.25, 0.0, 0.5])
 
     inv = safe_inv(in_array)
     np.testing.assert_array_equal(inv, expected_inv)
@@ -165,8 +175,16 @@ def test_safe_inv():
 def test_edges_to_dense_adjacency():
     num_nodes = 6
     edges = np.array([[0, 1, 3, 4, 4, 3, 2], [1, 0, 1, 4, 0, 0, 4]])
-    expected_adj = np.array([[0, 1, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0], [1, 1, 0, 0, 0, 0],
-                             [1, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0]])
+    expected_adj = np.array(
+        [
+            [0, 1, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1, 0],
+            [1, 1, 0, 0, 0, 0],
+            [1, 0, 0, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0],
+        ]
+    )
 
     adj = edges_to_dense_adjacency(edges, num_nodes)
     np.testing.assert_array_equal(adj, expected_adj)
@@ -222,32 +240,36 @@ def test_cache():
     mock_dataset = GeneratedGraphData(total_num_graphs=100, nodes_per_graph=3, edges_per_graph=6)
 
     def preprocess_fn(item, item_options):
-        return (np.array((1, )), np.array((2, )))
+        return (np.array((1,)), np.array((2,)))
 
     with TemporaryDirectory() as tmp_dir:
         # Don't save to cache
-        preprocess_items(dataset_name="test",
-                         dataset=mock_dataset,
-                         item_name="test",
-                         item_keys=item_keys,
-                         item_options={},
-                         preprocess_fn=preprocess_fn,
-                         load_from_cache=False,
-                         save_to_cache=False,
-                         cache_root=tmp_dir)
+        preprocess_items(
+            dataset_name="test",
+            dataset=mock_dataset,
+            item_name="test",
+            item_keys=item_keys,
+            item_options={},
+            preprocess_fn=preprocess_fn,
+            load_from_cache=False,
+            save_to_cache=False,
+            cache_root=tmp_dir,
+        )
         # Assert no cache files have been created
         assert len(list(Path(tmp_dir).glob("*"))) == 0
 
         # Save to cache
-        preprocess_items(dataset_name="test",
-                         dataset=mock_dataset,
-                         item_name="test",
-                         item_keys=item_keys,
-                         item_options={},
-                         preprocess_fn=preprocess_fn,
-                         load_from_cache=False,
-                         save_to_cache=True,
-                         cache_root=tmp_dir)
+        preprocess_items(
+            dataset_name="test",
+            dataset=mock_dataset,
+            item_name="test",
+            item_keys=item_keys,
+            item_options={},
+            preprocess_fn=preprocess_fn,
+            load_from_cache=False,
+            save_to_cache=True,
+            cache_root=tmp_dir,
+        )
         # Assert one cache file has been created
         assert len(list(Path(tmp_dir).glob("*"))) == 1
         # Make sure number of files is correct
@@ -261,18 +283,21 @@ def test_cache():
             # Create assertion if function is run, ie. cache hasn't been loaded
             assert False
 
-        preprocess_items(dataset_name="test",
-                         dataset=mock_dataset_from_cache,
-                         item_name="test",
-                         item_keys=item_keys,
-                         item_options={},
-                         preprocess_fn=preprocess_fn,
-                         load_from_cache=True,
-                         save_to_cache=True,
-                         cache_root=tmp_dir)
+        preprocess_items(
+            dataset_name="test",
+            dataset=mock_dataset_from_cache,
+            item_name="test",
+            item_keys=item_keys,
+            item_options={},
+            preprocess_fn=preprocess_fn,
+            load_from_cache=True,
+            save_to_cache=True,
+            cache_root=tmp_dir,
+        )
 
         # Check loaded cache is the same as originally generated
         for dataset_idx in range(len(mock_dataset.dataset)):
             for key in mock_dataset.dataset[dataset_idx][0]:
-                np.testing.assert_array_equal(mock_dataset_from_cache.dataset[dataset_idx][0][key],
-                                              mock_dataset.dataset[dataset_idx][0][key])
+                np.testing.assert_array_equal(
+                    mock_dataset_from_cache.dataset[dataset_idx][0][key], mock_dataset.dataset[dataset_idx][0][key]
+                )

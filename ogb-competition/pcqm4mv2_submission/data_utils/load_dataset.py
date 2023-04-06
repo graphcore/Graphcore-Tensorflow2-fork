@@ -16,75 +16,77 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 
 from data_utils.pcq_dataset_28features import CustomPCQM4Mv2Dataset
-from data_utils.pcq_dataset_28features import \
-    get_atom_feature_dims as get_atom_feature_dims_extended
-from data_utils.pcq_dataset_28features import \
-    get_bond_feature_dims as get_bond_feature_dims_extended
+from data_utils.pcq_dataset_28features import get_atom_feature_dims as get_atom_feature_dims_extended
+from data_utils.pcq_dataset_28features import get_bond_feature_dims as get_bond_feature_dims_extended
 from data_utils.pcq_dataset_28features import smiles2graph_large
 import warnings
 from tqdm import tqdm
 import torch
 
 
-def load_raw_dataset(dataset_name,
-                     dataset_cache_path,
-                     options,
-                     load_ensemble_cache=True,
-                     split=None,
-                     split_mode=None,
-                     ensemble=False):
+def load_raw_dataset(
+    dataset_name, dataset_cache_path, options, load_ensemble_cache=True, split=None, split_mode=None, ensemble=False
+):
     if dataset_name == "generated":
-        return GeneratedGraphData(total_num_graphs=options.dataset.generated_data_n_graphs,
-                                  nodes_per_graph=options.dataset.generated_data_n_nodes,
-                                  edges_per_graph=options.dataset.generated_data_n_edges)
+        return GeneratedGraphData(
+            total_num_graphs=options.dataset.generated_data_n_graphs,
+            nodes_per_graph=options.dataset.generated_data_n_nodes,
+            edges_per_graph=options.dataset.generated_data_n_edges,
+        )
     elif dataset_name == "pcqm4mv2":
-        return PCQM4Mv2GraphData(dataset_cache_path,
-                                 use_extended_features=False,
-                                 use_conformers=False,
-                                 trim_chemical_features=options.dataset.trim_chemical_features,
-                                 use_periods_and_groups=options.dataset.use_periods_and_groups,
-                                 do_not_use_atomic_number=options.dataset.do_not_use_atomic_number,
-                                 chemical_node_features=options.dataset.chemical_node_features,
-                                 chemical_edge_features=options.dataset.chemical_edge_features,
-                                 split=split,
-                                 ensemble=ensemble,
-                                 load_ensemble_cache=load_ensemble_cache,
-                                 split_mode=split_mode if ensemble else options.dataset.split_mode,
-                                 split_num=options.dataset.split_num,
-                                 split_path=options.dataset.split_path)
+        return PCQM4Mv2GraphData(
+            dataset_cache_path,
+            use_extended_features=False,
+            use_conformers=False,
+            trim_chemical_features=options.dataset.trim_chemical_features,
+            use_periods_and_groups=options.dataset.use_periods_and_groups,
+            do_not_use_atomic_number=options.dataset.do_not_use_atomic_number,
+            chemical_node_features=options.dataset.chemical_node_features,
+            chemical_edge_features=options.dataset.chemical_edge_features,
+            split=split,
+            ensemble=ensemble,
+            load_ensemble_cache=load_ensemble_cache,
+            split_mode=split_mode if ensemble else options.dataset.split_mode,
+            split_num=options.dataset.split_num,
+            split_path=options.dataset.split_path,
+        )
     elif dataset_name == "pcqm4mv2_conformers_28features":
-        return PCQM4Mv2GraphData(dataset_cache_path,
-                                 use_extended_features=True,
-                                 use_conformers=True,
-                                 num_processes=options.dataset.parallel_processes,
-                                 trim_chemical_features=options.dataset.trim_chemical_features,
-                                 use_periods_and_groups=options.dataset.use_periods_and_groups,
-                                 do_not_use_atomic_number=options.dataset.do_not_use_atomic_number,
-                                 chemical_node_features=options.dataset.chemical_node_features,
-                                 chemical_edge_features=options.dataset.chemical_edge_features,
-                                 split=split,
-                                 ensemble=ensemble,
-                                 load_ensemble_cache=load_ensemble_cache,
-                                 split_mode=split_mode if ensemble else options.dataset.split_mode,
-                                 split_num=options.dataset.split_num,
-                                 split_path=options.dataset.split_path)
+        return PCQM4Mv2GraphData(
+            dataset_cache_path,
+            use_extended_features=True,
+            use_conformers=True,
+            num_processes=options.dataset.parallel_processes,
+            trim_chemical_features=options.dataset.trim_chemical_features,
+            use_periods_and_groups=options.dataset.use_periods_and_groups,
+            do_not_use_atomic_number=options.dataset.do_not_use_atomic_number,
+            chemical_node_features=options.dataset.chemical_node_features,
+            chemical_edge_features=options.dataset.chemical_edge_features,
+            split=split,
+            ensemble=ensemble,
+            load_ensemble_cache=load_ensemble_cache,
+            split_mode=split_mode if ensemble else options.dataset.split_mode,
+            split_num=options.dataset.split_num,
+            split_path=options.dataset.split_path,
+        )
     else:
         raise ValueError(f"Dataset name {dataset_name} not supported.")
 
 
 class OGBGraphData:
-    def __init__(self,
-                 use_extended_features=False,
-                 use_conformers=False,
-                 num_processes=240,
-                 trim_chemical_features=False,
-                 use_periods_and_groups=False,
-                 do_not_use_atomic_number=False,
-                 chemical_node_features=['atomic_num'],
-                 chemical_edge_features=['possible_bond_type'],
-                 split_mode='original',
-                 split_num=0,
-                 split_path='./pcqm4mv2-cross_val_splits/'):
+    def __init__(
+        self,
+        use_extended_features=False,
+        use_conformers=False,
+        num_processes=240,
+        trim_chemical_features=False,
+        use_periods_and_groups=False,
+        do_not_use_atomic_number=False,
+        chemical_node_features=["atomic_num"],
+        chemical_edge_features=["possible_bond_type"],
+        split_mode="original",
+        split_num=0,
+        split_path="./pcqm4mv2-cross_val_splits/",
+    ):
         self.dataset = {}
         self.labels_dtype = np.int32
         self.test_split_name = "test"
@@ -106,16 +108,42 @@ class OGBGraphData:
             bond_features_dims = get_bond_feature_dims()
         if self.trim_chemical_features:
             enforce_chemical_node_features_order = [
-                'atomic_num', 'chiral_tag', 'degree', 'possible_formal_charge', 'possible_numH',
-                'possible_number_radical_e', 'possible_hybridization', 'possible_is_aromatic', 'possible_is_in_ring',
-                'explicit_valence', 'implicit_valence', 'total_valence', 'total_degree', 'default_valence',
-                'n_outer_electrons', 'rvdw', 'rb0', 'env2', 'env3', 'env4', 'env5', 'env6', 'env7', 'env8',
-                'gasteiger_charge', 'donor', 'acceptor', 'num_chiral_centers'
+                "atomic_num",
+                "chiral_tag",
+                "degree",
+                "possible_formal_charge",
+                "possible_numH",
+                "possible_number_radical_e",
+                "possible_hybridization",
+                "possible_is_aromatic",
+                "possible_is_in_ring",
+                "explicit_valence",
+                "implicit_valence",
+                "total_valence",
+                "total_degree",
+                "default_valence",
+                "n_outer_electrons",
+                "rvdw",
+                "rb0",
+                "env2",
+                "env3",
+                "env4",
+                "env5",
+                "env6",
+                "env7",
+                "env8",
+                "gasteiger_charge",
+                "donor",
+                "acceptor",
+                "num_chiral_centers",
             ]
 
             enforce_chemical_edge_features_order = [
-                'possible_bond_type', 'possible_bond_stereo', 'possible_is_conjugated', 'possible_is_in_ring',
-                'possible_bond_dir'
+                "possible_bond_type",
+                "possible_bond_stereo",
+                "possible_is_conjugated",
+                "possible_is_in_ring",
+                "possible_bond_dir",
             ]
 
             ordered_chemical_node_features = [
@@ -126,12 +154,13 @@ class OGBGraphData:
             for i in ordered_chemical_node_features:
                 # index_to_keep is not used here
                 index_to_keep.append(enforce_chemical_node_features_order.index(i))
-                if do_not_use_atomic_number and i == 'atomic_num':
+                if do_not_use_atomic_number and i == "atomic_num":
                     atom_features_dims = atom_features_dims
                 else:
                     atom_features_dims.append(
-                        get_atom_feature_dims_extended()[enforce_chemical_node_features_order.index(i)])
-                if use_periods_and_groups and i == 'atomic_num':
+                        get_atom_feature_dims_extended()[enforce_chemical_node_features_order.index(i)]
+                    )
+                if use_periods_and_groups and i == "atomic_num":
                     atom_features_dims.extend([9, 18, 10])
 
             ordered_chemical_edge_features = [
@@ -142,7 +171,8 @@ class OGBGraphData:
             for i in ordered_chemical_edge_features:
                 edge_index_to_keep.append(enforce_chemical_edge_features_order.index(i))
                 bond_features_dims.append(
-                    get_bond_feature_dims_extended()[enforce_chemical_edge_features_order.index(i)])
+                    get_bond_feature_dims_extended()[enforce_chemical_edge_features_order.index(i)]
+                )
         # atom_features_dims is a list with the atom features selected
         self.node_feature_dims = atom_features_dims
         self.node_feature_size = len(atom_features_dims)
@@ -181,7 +211,7 @@ class OGBGraphData:
         for split_name in self.dataset.split_dict:
             if split is None or split_name in split:
                 if do_check_for_nans:
-                    check_for_nans = ['labels', 'node_feat', 'edge_feat', "ogb_bond_lengths"]
+                    check_for_nans = ["labels", "node_feat", "edge_feat", "ogb_bond_lengths"]
                     nan_check = {k: [] for k in check_for_nans}
                 else:
                     nan_check = {}
@@ -192,11 +222,11 @@ class OGBGraphData:
                 for idx in tqdm(self.dataset.split_dict[split_name], desc=f"Getting stats for {split_name} split"):
                     item = self.dataset[idx][0]
                     label = self.dataset[idx][1]
-                    n_edges.append(len(item['edge_feat']))
-                    n_nodes.append(item['num_nodes'])
+                    n_edges.append(len(item["edge_feat"]))
+                    n_nodes.append(item["num_nodes"])
                     if do_check_for_nans:
                         for k in nan_check.keys():
-                            if k == 'labels':
+                            if k == "labels":
                                 nan_check[k].append(np.isnan(label).any())
                             elif k in item.keys():
                                 nan_check[k].append(np.isnan(item[k]).any())
@@ -215,8 +245,7 @@ class OGBGraphData:
                 }
                 if do_check_for_nans:
                     stats_for_split["nan_check"] = {
-                        k: any(nan_check[k])
-                        for k in nan_check.keys() if nan_check[k] != []
+                        k: any(nan_check[k]) for k in nan_check.keys() if nan_check[k] != []
                     }
 
                 stats[split_name] = stats_for_split
@@ -231,11 +260,12 @@ class OGBGraphData:
             stats_for_split = {}
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore", category=RuntimeWarning)
-                for idx in tqdm(self.dataset.split_dict[split_name],
-                                desc=f"Getting conformer stats for {split_name} split"):
+                for idx in tqdm(
+                    self.dataset.split_dict[split_name], desc=f"Getting conformer stats for {split_name} split"
+                ):
                     item = self.dataset[idx][0]
-                    ogb_bond_lengths.append(item.get('ogb_bond_lengths', [np.nan]))
-                    atom_distances.append(item.get('atom_distances', [np.nan]).flatten())
+                    ogb_bond_lengths.append(item.get("ogb_bond_lengths", [np.nan]))
+                    atom_distances.append(item.get("atom_distances", [np.nan]).flatten())
                 ogb_bond_lengths = np.concatenate(ogb_bond_lengths)
                 atom_distances = np.concatenate(atom_distances)
                 stats_for_split["conformers"] = {
@@ -253,116 +283,128 @@ class OGBGraphData:
 
 
 class PCQM4Mv2GraphData(OGBGraphData):
-    def __init__(self,
-                 dataset_cache_path=Path("."),
-                 use_extended_features=True,
-                 use_conformers=False,
-                 num_processes=240,
-                 trim_chemical_features=False,
-                 use_periods_and_groups=False,
-                 do_not_use_atomic_number=False,
-                 chemical_node_features=['atomic_num'],
-                 chemical_edge_features=['possible_bond_type'],
-                 split=None,
-                 ensemble=False,
-                 load_ensemble_cache=True,
-                 split_mode='original',
-                 split_num=0,
-                 split_path='./pcqm4mv2-cross_val_splits/'):
-        super().__init__(use_extended_features=use_extended_features,
-                         use_conformers=use_conformers,
-                         num_processes=num_processes,
-                         trim_chemical_features=trim_chemical_features,
-                         use_periods_and_groups=use_periods_and_groups,
-                         do_not_use_atomic_number=do_not_use_atomic_number,
-                         chemical_node_features=chemical_node_features,
-                         chemical_edge_features=chemical_edge_features,
-                         split_mode=split_mode,
-                         split_num=split_num,
-                         split_path=split_path)
+    def __init__(
+        self,
+        dataset_cache_path=Path("."),
+        use_extended_features=True,
+        use_conformers=False,
+        num_processes=240,
+        trim_chemical_features=False,
+        use_periods_and_groups=False,
+        do_not_use_atomic_number=False,
+        chemical_node_features=["atomic_num"],
+        chemical_edge_features=["possible_bond_type"],
+        split=None,
+        ensemble=False,
+        load_ensemble_cache=True,
+        split_mode="original",
+        split_num=0,
+        split_path="./pcqm4mv2-cross_val_splits/",
+    ):
+        super().__init__(
+            use_extended_features=use_extended_features,
+            use_conformers=use_conformers,
+            num_processes=num_processes,
+            trim_chemical_features=trim_chemical_features,
+            use_periods_and_groups=use_periods_and_groups,
+            do_not_use_atomic_number=do_not_use_atomic_number,
+            chemical_node_features=chemical_node_features,
+            chemical_edge_features=chemical_edge_features,
+            split_mode=split_mode,
+            split_num=split_num,
+            split_path=split_path,
+        )
 
         if ensemble:
             # During inference we would like to use only sub-set of the whole dataset,
-            # the split and ensemble flags would help us differenciate that.
+            # the split and ensemble flags would help us differentiate that.
             if use_extended_features:
                 smiles2graph_func = smiles2graph_large
             else:
                 smiles2graph_func = smiles2graph
-            self.dataset = CustomPCQM4Mv2Dataset(root=dataset_cache_path,
-                                                 smiles2graph=smiles2graph_func,
-                                                 use_extended_features=use_extended_features,
-                                                 use_conformers=use_conformers,
-                                                 num_processes=num_processes,
-                                                 trim_chemical_features=trim_chemical_features,
-                                                 use_periods_and_groups=use_periods_and_groups,
-                                                 do_not_use_atomic_number=do_not_use_atomic_number,
-                                                 chemical_node_features=chemical_node_features,
-                                                 chemical_edge_features=chemical_edge_features,
-                                                 split=split,
-                                                 ensemble=ensemble,
-                                                 load_ensemble_cache=load_ensemble_cache,
-                                                 split_mode=split_mode,
-                                                 split_num=split_num,
-                                                 split_path=split_path)
+            self.dataset = CustomPCQM4Mv2Dataset(
+                root=dataset_cache_path,
+                smiles2graph=smiles2graph_func,
+                use_extended_features=use_extended_features,
+                use_conformers=use_conformers,
+                num_processes=num_processes,
+                trim_chemical_features=trim_chemical_features,
+                use_periods_and_groups=use_periods_and_groups,
+                do_not_use_atomic_number=do_not_use_atomic_number,
+                chemical_node_features=chemical_node_features,
+                chemical_edge_features=chemical_edge_features,
+                split=split,
+                ensemble=ensemble,
+                load_ensemble_cache=load_ensemble_cache,
+                split_mode=split_mode,
+                split_num=split_num,
+                split_path=split_path,
+            )
 
         else:
             if use_extended_features and use_conformers:
-                self.dataset = CustomPCQM4Mv2Dataset(root=dataset_cache_path,
-                                                     smiles2graph=smiles2graph_large,
-                                                     use_extended_features=use_extended_features,
-                                                     use_conformers=use_conformers,
-                                                     num_processes=num_processes,
-                                                     trim_chemical_features=trim_chemical_features,
-                                                     use_periods_and_groups=use_periods_and_groups,
-                                                     do_not_use_atomic_number=do_not_use_atomic_number,
-                                                     chemical_node_features=chemical_node_features,
-                                                     chemical_edge_features=chemical_edge_features,
-                                                     split_mode=split_mode,
-                                                     split_num=split_num,
-                                                     split_path=split_path)
+                self.dataset = CustomPCQM4Mv2Dataset(
+                    root=dataset_cache_path,
+                    smiles2graph=smiles2graph_large,
+                    use_extended_features=use_extended_features,
+                    use_conformers=use_conformers,
+                    num_processes=num_processes,
+                    trim_chemical_features=trim_chemical_features,
+                    use_periods_and_groups=use_periods_and_groups,
+                    do_not_use_atomic_number=do_not_use_atomic_number,
+                    chemical_node_features=chemical_node_features,
+                    chemical_edge_features=chemical_edge_features,
+                    split_mode=split_mode,
+                    split_num=split_num,
+                    split_path=split_path,
+                )
             elif use_conformers and not use_extended_features:
-                self.dataset = CustomPCQM4Mv2Dataset(root=dataset_cache_path,
-                                                     smiles2graph=smiles2graph,
-                                                     use_extended_features=use_extended_features,
-                                                     use_conformers=use_conformers,
-                                                     num_processes=num_processes,
-                                                     trim_chemical_features=trim_chemical_features,
-                                                     use_periods_and_groups=use_periods_and_groups,
-                                                     do_not_use_atomic_number=do_not_use_atomic_number,
-                                                     chemical_node_features=chemical_node_features,
-                                                     chemical_edge_features=chemical_edge_features,
-                                                     split_mode=split_mode,
-                                                     split_num=split_num,
-                                                     split_path=split_path)
+                self.dataset = CustomPCQM4Mv2Dataset(
+                    root=dataset_cache_path,
+                    smiles2graph=smiles2graph,
+                    use_extended_features=use_extended_features,
+                    use_conformers=use_conformers,
+                    num_processes=num_processes,
+                    trim_chemical_features=trim_chemical_features,
+                    use_periods_and_groups=use_periods_and_groups,
+                    do_not_use_atomic_number=do_not_use_atomic_number,
+                    chemical_node_features=chemical_node_features,
+                    chemical_edge_features=chemical_edge_features,
+                    split_mode=split_mode,
+                    split_num=split_num,
+                    split_path=split_path,
+                )
             elif use_extended_features and not use_conformers:
-                self.dataset = CustomPCQM4Mv2Dataset(root=dataset_cache_path,
-                                                     smiles2graph=smiles2graph_large,
-                                                     use_extended_features=use_extended_features,
-                                                     use_conformers=use_conformers,
-                                                     num_processes=num_processes,
-                                                     trim_chemical_features=trim_chemical_features,
-                                                     use_periods_and_groups=use_periods_and_groups,
-                                                     do_not_use_atomic_number=do_not_use_atomic_number,
-                                                     chemical_node_features=chemical_node_features,
-                                                     chemical_edge_features=chemical_edge_features,
-                                                     split=split,
-                                                     ensemble=ensemble,
-                                                     split_mode=split_mode,
-                                                     split_num=split_num,
-                                                     split_path=split_path)
+                self.dataset = CustomPCQM4Mv2Dataset(
+                    root=dataset_cache_path,
+                    smiles2graph=smiles2graph_large,
+                    use_extended_features=use_extended_features,
+                    use_conformers=use_conformers,
+                    num_processes=num_processes,
+                    trim_chemical_features=trim_chemical_features,
+                    use_periods_and_groups=use_periods_and_groups,
+                    do_not_use_atomic_number=do_not_use_atomic_number,
+                    chemical_node_features=chemical_node_features,
+                    chemical_edge_features=chemical_edge_features,
+                    split=split,
+                    ensemble=ensemble,
+                    split_mode=split_mode,
+                    split_num=split_num,
+                    split_path=split_path,
+                )
             else:
                 self.dataset = PCQM4Mv2Dataset(root=dataset_cache_path, smiles2graph=smiles2graph)
 
-        if split_mode == 'incl_half_valid':
-            split_file = split_path + 'incl_half_valid/split_dict_' + str(split_num) + '.pt'
+        if split_mode == "incl_half_valid":
+            split_file = split_path + "incl_half_valid/split_dict_" + str(split_num) + ".pt"
             logging.info(f"Split file: {split_file}")
             self.dataset.split_dict = torch.load(split_file)
-        elif split_mode == '47_kfold':
-            split_file = split_path + '47_kfold/split_dict_' + str(split_num) + '.pt'
+        elif split_mode == "47_kfold":
+            split_file = split_path + "47_kfold/split_dict_" + str(split_num) + ".pt"
             logging.info(f"Split file: {split_file}")
             self.dataset.split_dict = torch.load(split_file)
-        elif split_mode == 'train_plus_valid':
-            split_file = split_path + 'train_plus_valid/split_dict.pt'
+        elif split_mode == "train_plus_valid":
+            split_file = split_path + "train_plus_valid/split_dict.pt"
             logging.info(f"Split file: {split_file}")
             self.dataset.split_dict = torch.load(split_file)
         else:
@@ -392,8 +434,14 @@ class GeneratedGraphData(OGBGraphData):
         super().__init__(use_extended_features=False)
         self.labels_dtype = np.float32
         self.tf_labels_dtype = tf.float32
-        self.dataset = GeneratedOGBGraphData(total_num_graphs, self.node_feature_dims, self.edge_feature_dims,
-                                             nodes_per_graph, edges_per_graph, self.labels_dtype)
+        self.dataset = GeneratedOGBGraphData(
+            total_num_graphs,
+            self.node_feature_dims,
+            self.edge_feature_dims,
+            nodes_per_graph,
+            edges_per_graph,
+            self.labels_dtype,
+        )
         self.test_split_name = "valid"
         self.task_score_mode = "min"
         self.total_num_graphs = len(self.dataset.graphs)
@@ -403,31 +451,35 @@ class GeneratedGraphData(OGBGraphData):
 
 
 class GeneratedOGBGraphData:
-    def __init__(self, total_num_graphs, node_feature_dims, edge_feature_dims, nodes_per_graph, edges_per_graph,
-                 labels_dtype):
+    def __init__(
+        self, total_num_graphs, node_feature_dims, edge_feature_dims, nodes_per_graph, edges_per_graph, labels_dtype
+    ):
         assert edges_per_graph % 2 == 0, "Generated edges per graph must be a multiple of 2."
         num_node_feats = len(node_feature_dims)
         num_edge_feats = len(edge_feature_dims)
         np.random.seed(23)
         self.total_num_graphs = total_num_graphs
-        self.graphs = [{
-            "num_nodes":
-            nodes_per_graph,
-            "node_feat":
-            np.random.randint(size=(nodes_per_graph, num_node_feats),
-                              low=np.zeros_like(node_feature_dims),
-                              high=node_feature_dims,
-                              dtype=np.int32),
-            "edge_index":
-            np.stack(self.get_random_edge_idx(nodes_per_graph, edges_per_graph)).astype(np.int32),
-            "edge_feat":
-            np.random.randint(size=(edges_per_graph, num_edge_feats),
-                              low=np.zeros_like(edge_feature_dims),
-                              high=edge_feature_dims,
-                              dtype=np.int32),
-        } for _ in range(total_num_graphs)]
+        self.graphs = [
+            {
+                "num_nodes": nodes_per_graph,
+                "node_feat": np.random.randint(
+                    size=(nodes_per_graph, num_node_feats),
+                    low=np.zeros_like(node_feature_dims),
+                    high=node_feature_dims,
+                    dtype=np.int32,
+                ),
+                "edge_index": np.stack(self.get_random_edge_idx(nodes_per_graph, edges_per_graph)).astype(np.int32),
+                "edge_feat": np.random.randint(
+                    size=(edges_per_graph, num_edge_feats),
+                    low=np.zeros_like(edge_feature_dims),
+                    high=edge_feature_dims,
+                    dtype=np.int32,
+                ),
+            }
+            for _ in range(total_num_graphs)
+        ]
         # List of edge_index edge_feat node_feat num_nodes for each graph
-        self.labels = np.random.uniform(low=0, high=2, size=(total_num_graphs, )).astype(labels_dtype)
+        self.labels = np.random.uniform(low=0, high=2, size=(total_num_graphs,)).astype(labels_dtype)
         self.name = "generated"
 
         # Select 80 percent of graphs for training and 10 percent for validation and test
@@ -463,7 +515,7 @@ class GeneratedOGBGraphData:
 
         random_connections = np.random.permutation(upper_right_coords)
 
-        for i, j in random_connections[:(edges_per_graph - len(edge_idx)) // 2]:
+        for i, j in random_connections[: (edges_per_graph - len(edge_idx)) // 2]:
             edge_idx.extend([[i, j], [j, i]])
 
         # offset the adjacency matrices
@@ -479,7 +531,7 @@ class CustomOGBGraphData:
         self.graphs = custom_graph_items
 
         for graph in self.graphs:
-            graph["ogb_conformer"] = np.array(np.full([len(graph['node_feat']), 3], np.nan), dtype=float)
+            graph["ogb_conformer"] = np.array(np.full([len(graph["node_feat"]), 3], np.nan), dtype=float)
 
         # List of edge_index edge_feat node_feat num_nodes for each graph
         self.labels = [np.nan] * self.total_num_graphs
@@ -501,22 +553,26 @@ class CustomOGBGraphData:
 
 
 class CustomGraphData(OGBGraphData):
-    def __init__(self,
-                 custom_graph_items,
-                 use_extended_features=False,
-                 use_conformers=False,
-                 trim_chemical_features=False,
-                 use_periods_and_groups=False,
-                 do_not_use_atomic_number=False,
-                 chemical_node_features=['atomic_num'],
-                 chemical_edge_features=['possible_bond_type']):
-        super().__init__(use_extended_features=use_extended_features,
-                         use_conformers=use_conformers,
-                         trim_chemical_features=trim_chemical_features,
-                         use_periods_and_groups=use_periods_and_groups,
-                         do_not_use_atomic_number=do_not_use_atomic_number,
-                         chemical_node_features=chemical_node_features,
-                         chemical_edge_features=chemical_edge_features)
+    def __init__(
+        self,
+        custom_graph_items,
+        use_extended_features=False,
+        use_conformers=False,
+        trim_chemical_features=False,
+        use_periods_and_groups=False,
+        do_not_use_atomic_number=False,
+        chemical_node_features=["atomic_num"],
+        chemical_edge_features=["possible_bond_type"],
+    ):
+        super().__init__(
+            use_extended_features=use_extended_features,
+            use_conformers=use_conformers,
+            trim_chemical_features=trim_chemical_features,
+            use_periods_and_groups=use_periods_and_groups,
+            do_not_use_atomic_number=do_not_use_atomic_number,
+            chemical_node_features=chemical_node_features,
+            chemical_edge_features=chemical_edge_features,
+        )
         self.labels_dtype = np.float32
         self.tf_labels_dtype = tf.float32
         self.dataset = CustomOGBGraphData(custom_graph_items)

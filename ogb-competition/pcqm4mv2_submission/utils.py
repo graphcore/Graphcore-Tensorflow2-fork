@@ -31,24 +31,26 @@ class ThroughputCallback(keras.callbacks.Callback):
         time_per_epoch = time.time() - self.time
         samples_per_sec = self.samples_per_epoch / time_per_epoch
         if self.log_wandb:
-            wandb_logs = {'epoch': epoch, 'throughput': samples_per_sec}
+            wandb_logs = {"epoch": epoch, "throughput": samples_per_sec}
             wandb_logs.update(logs)
             wandb.log(wandb_logs)
 
         logging.info(f"\nThroughput: {samples_per_sec:.2f} graphs/sec")
 
 
-def get_optimizer(name="adam",
-                  learning_rate=1e-5,
-                  l2_regularization=None,
-                  dtype="float32",
-                  m_dtype=None,
-                  v_dtype=None,
-                  clip_value=None,
-                  loss_scale=1,
-                  gradient_accumulation_factor=1,
-                  outline_apply_gradients=False,
-                  replicas=1):
+def get_optimizer(
+    name="adam",
+    learning_rate=1e-5,
+    l2_regularization=None,
+    dtype="float32",
+    m_dtype=None,
+    v_dtype=None,
+    clip_value=None,
+    loss_scale=1,
+    gradient_accumulation_factor=1,
+    outline_apply_gradients=False,
+    replicas=1,
+):
     def clip_gradients(grads_and_vars):
         return [(tf.clip_by_norm(g, clip_value), v) for g, v in grads_and_vars]
 
@@ -66,19 +68,21 @@ def get_optimizer(name="adam",
 
         gradient_transformer = rescale_gradients
 
-    if name == 'sgd':
+    if name == "sgd":
         opt_class = add_l2_regularization(tf.keras.optimizers.SGD, l2_regularization)
         opt = opt_class(learning_rate=learning_rate, gradient_transformers=[gradient_transformer])
-    elif name == 'tf_adam':
+    elif name == "tf_adam":
         opt_class = add_l2_regularization(tf.keras.optimizers.Adam, l2_regularization)
         opt = opt_class(learning_rate=learning_rate, gradient_transformers=[gradient_transformer])
-    elif name == 'adam':
+    elif name == "adam":
         opt_class = add_l2_regularization(xpu.AdamIpuOptimizer, l2_regularization)
-        opt = opt_class(learning_rate=learning_rate,
-                        gradient_transformers=[gradient_transformer],
-                        m_dtype=m_dtype,
-                        v_dtype=v_dtype,
-                        outline_apply_gradients=outline_apply_gradients)
+        opt = opt_class(
+            learning_rate=learning_rate,
+            gradient_transformers=[gradient_transformer],
+            m_dtype=m_dtype,
+            v_dtype=v_dtype,
+            outline_apply_gradients=outline_apply_gradients,
+        )
     else:
         raise NotImplementedError(f"Optimizer {name} is not supported.")
 
@@ -102,12 +106,12 @@ def add_l2_regularization(optimizer_class, l2_regularization):
     return L2Regularizer
 
 
-def size_hr(num, suffix='B'):
-    for unit in ['', 'Ki', 'Mi', 'Gi', 'Ti', 'Pi', 'Ei', 'Zi']:
+def size_hr(num, suffix="B"):
+    for unit in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"]:
         if abs(num) < 1024.0:
             return "%3.1f %s%s" % (num, unit, suffix)
         num /= 1024.0
-    return "%.1f%s%s" % (num, 'Yi', suffix)
+    return "%.1f%s%s" % (num, "Yi", suffix)
 
 
 def print_trainable_variables(model, log_wandb=False):
@@ -124,17 +128,17 @@ def print_trainable_variables(model, log_wandb=False):
         total_size += variable_size
     logging.info(f"Total Parameters: {total_parameters:,}  ({size_hr(total_size)})")
     if log_wandb:
-        wandb.log({'parameters': total_parameters, 'parameter size (MiB)': total_size / (1024**2)})
+        wandb.log({"parameters": total_parameters, "parameter size (MiB)": total_size / (1024**2)})
 
 
 def str_dtype_to_tf_dtype(str_dtype):
-    return {'float16': tf.float16, 'mixed_float16': tf.float32, 'float32': tf.float32}[str_dtype]
+    return {"float16": tf.float16, "mixed_float16": tf.float32, "float32": tf.float32}[str_dtype]
 
 
 def convert_loss_and_metric_reductions_to_fp32(model):
-    model.compiled_loss._loss_metric = metrics_mod.Mean(name='loss', dtype=tf.float32)
+    model.compiled_loss._loss_metric = metrics_mod.Mean(name="loss", dtype=tf.float32)
     model.compiled_loss._per_output_metrics = [
-        metrics_mod.Mean(name=n + '_loss', dtype=tf.float32) for n in model.compiled_loss._output_names
+        metrics_mod.Mean(name=n + "_loss", dtype=tf.float32) for n in model.compiled_loss._output_names
     ]
     metrics = model.compiled_metrics._weighted_metrics
     for k in metrics.keys():
@@ -147,7 +151,7 @@ def convert_loss_and_metric_reductions_to_fp32(model):
         for m in metrics[k]:
             metric_obj = metrics_mod.get(m)
             if isinstance(metric_obj, metrics_mod.MeanMetricWrapper):
-                assert metric_obj.dtype == 'float32', 'metrics must accumulate in float32'
+                assert metric_obj.dtype == "float32", "metrics must accumulate in float32"
                 new_metrics_list += [metric_obj]
             else:
                 new_metrics_list += [
@@ -158,8 +162,8 @@ def convert_loss_and_metric_reductions_to_fp32(model):
 
 
 def options_validator(cfg):
-    """Validate the option combinations that depend on each other. 
-    NOTE: This is WIP and not exhaustive. 
+    """Validate the option combinations that depend on each other.
+    NOTE: This is WIP and not exhaustive.
 
     Args:
         cfg : config object from jsonargparse
@@ -169,8 +173,10 @@ def options_validator(cfg):
         raise ValueError(f"Cannot use noisy edges without use edges set to True.")
 
     if cfg.upload_final_ckpt is True and cfg.wandb is False:
-        logging.warning(f"`cfg.upload_final_ckpt` is {cfg.upload_final_ckpt} but `cfg.wandb` is {cfg.wandb}." \
-                         " Can't upload checkpoint without wandb activated.")
+        logging.warning(
+            f"`cfg.upload_final_ckpt` is {cfg.upload_final_ckpt} but `cfg.wandb` is {cfg.wandb}."
+            " Can't upload checkpoint without wandb activated."
+        )
 
 
 def set_random_seeds(seed=42):

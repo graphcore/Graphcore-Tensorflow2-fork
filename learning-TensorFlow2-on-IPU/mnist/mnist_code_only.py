@@ -17,14 +17,8 @@ def create_dataset():
     (x_train, y_train), _ = mnist.load_data()
     x_train = x_train / 255.0
 
-    train_ds = (
-        tf.data.Dataset.from_tensor_slices((x_train, y_train))
-        .shuffle(10000)
-        .batch(32, drop_remainder=True)
-    )
-    train_ds = train_ds.map(
-        lambda d, l: (tf.cast(d, tf.float32), tf.cast(l, tf.float32))
-    )
+    train_ds = tf.data.Dataset.from_tensor_slices((x_train, y_train)).shuffle(10000).batch(32, drop_remainder=True)
+    train_ds = train_ds.map(lambda d, l: (tf.cast(d, tf.float32), tf.cast(l, tf.float32)))
 
     # Create a looped version of the dataset
     return train_ds.repeat()

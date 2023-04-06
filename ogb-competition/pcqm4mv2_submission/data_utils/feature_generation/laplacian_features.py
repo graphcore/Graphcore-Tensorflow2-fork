@@ -66,7 +66,7 @@ def eigvec_normalizer(eig_vecs, eig_vals, normalization="L2", eps=1e-12):
     return eig_vecs
 
 
-def get_lap_decomp_stats(evals, evects, max_freqs, eigvec_norm='L2'):
+def get_lap_decomp_stats(evals, evects, max_freqs, eigvec_norm="L2"):
     """Compute Laplacian eigen-decomposition-based PE stats of the given graph.
 
     Args:
@@ -87,13 +87,13 @@ def get_lap_decomp_stats(evals, evects, max_freqs, eigvec_norm='L2'):
     # Normalize and pad eigen vectors.
     evects = eigvec_normalizer(evects, evals, normalization=eigvec_norm)
     if num_nodes < max_freqs:
-        eig_vecs = np.pad(evects, ((0, 0), (0, max_freqs - num_nodes)), 'constant', constant_values=np.nan)
+        eig_vecs = np.pad(evects, ((0, 0), (0, max_freqs - num_nodes)), "constant", constant_values=np.nan)
     else:
         eig_vecs = evects
 
     # Pad and save eigenvalues.
     if num_nodes < max_freqs:
-        eig_vals = np.pad(evals, (0, max_freqs - num_nodes), 'constant', constant_values=np.nan)
+        eig_vals = np.pad(evals, (0, max_freqs - num_nodes), "constant", constant_values=np.nan)
     else:
         eig_vals = evals
 
@@ -103,12 +103,9 @@ def get_lap_decomp_stats(evals, evects, max_freqs, eigvec_norm='L2'):
     return eig_vals, eig_vecs
 
 
-def get_laplacian_features(data,
-                           max_freqs=3,
-                           eigvec_norm="L2",
-                           eigval_inverse=False,
-                           eigval_norm=False,
-                           remove_first=False):
+def get_laplacian_features(
+    data, max_freqs=3, eigvec_norm="L2", eigval_inverse=False, eigval_norm=False, remove_first=False
+):
     # Eigen values and vectors.
     evals, evects = None, None
     # Basic preprocessing of the input graph.
@@ -125,8 +122,9 @@ def get_laplacian_features(data,
         row, col = edge_list
         assert edge_attr.shape[0] == row.shape[0]
         laplacian = scipy.sparse.coo_matrix((edge_attr, (row, col)), (num_nodes, num_nodes))
-        evals, evects = np.linalg.eigh(laplacian.astype(
-            np.float32).toarray())  # Hack to convert to float32 for linear algebra
+        evals, evects = np.linalg.eigh(
+            laplacian.astype(np.float32).toarray()
+        )  # Hack to convert to float32 for linear algebra
 
         evals, evects = get_lap_decomp_stats(evals=evals, evects=evects, max_freqs=max_freqs, eigvec_norm=eigvec_norm)
 
@@ -141,8 +139,8 @@ def get_laplacian_features(data,
     if eigval_inverse:
         # remove nans and fill with 0
         nan_mask = np.isnan(evals)
-        evals[nan_mask] = 0.
-        evals[evals > 1e-10] = 1. / evals[evals > 1e-10]
+        evals[nan_mask] = 0.0
+        evals[evals > 1e-10] = 1.0 / evals[evals > 1e-10]
 
     # If eigval_norm is true, normalize the eigen values, recommend to use with the eigval_inverse and remove_first
     if eigval_norm:

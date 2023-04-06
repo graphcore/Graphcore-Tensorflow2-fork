@@ -2,8 +2,7 @@
 Copyright (c) 2020 Graphcore Ltd. All rights reserved.
 """
 """
-# Training a simple TensorFlow 2 model on MNIST with an IPU
-
+# Training a Simple TensorFlow 2 Model on MNIST with an IPU
 This tutorial shows how to train a simple model using the MNIST numerical
 dataset on a single IPU. The dataset consists of 60,000 images of handwritten
 digits (0-9) that must be classified according to which digit they represent.
@@ -50,14 +49,8 @@ def create_dataset():
     (x_train, y_train), _ = mnist.load_data()
     x_train = x_train / 255.0
 
-    train_ds = (
-        tf.data.Dataset.from_tensor_slices((x_train, y_train))
-        .shuffle(10000)
-        .batch(32, drop_remainder=True)
-    )
-    train_ds = train_ds.map(
-        lambda d, l: (tf.cast(d, tf.float32), tf.cast(l, tf.float32))
-    )
+    train_ds = tf.data.Dataset.from_tensor_slices((x_train, y_train)).shuffle(10000).batch(32, drop_remainder=True)
+    train_ds = train_ds.map(lambda d, l: (tf.cast(d, tf.float32), tf.cast(l, tf.float32)))
 
     # Create a looped version of the dataset
     return train_ds.repeat()
@@ -111,12 +104,12 @@ cfg.configure_ipu_system()
 """
 This is all we need to get a small model up and running, though a full list of
 configuration options is available in the [API
-documentation](https://docs.graphcore.ai/projects/tensorflow-user-guide/en/3.0.0/tensorflow/api.html#tensorflow.python.ipu.config.IPUConfig).
+documentation](https://docs.graphcore.ai/projects/tensorflow-user-guide/en/3.1.0/tensorflow/api.html#tensorflow.python.ipu.config.IPUConfig).
 
 If you're interested in learning how to optimally use models that require
 multiple IPUs (for example due to their size), see the section on pipelining
 from our documentation on [model
-parallelism](https://docs.graphcore.ai/projects/tf-model-parallelism/en/3.0.0/model.html).
+parallelism](https://docs.graphcore.ai/projects/tf-model-parallelism/en/3.1.0/model.html).
 
 > To see how this process can be implemented, head over to the pipelining
 section of our [TensorFlow 2 Keras
@@ -134,7 +127,7 @@ strategy = ipu.ipu_strategy.IPUStrategy()
 The `tf.distribute.Strategy` is an API to distribute training and inference
 across multiple devices. `IPUStrategy` is a subclass which targets a system
 with one or more IPUs attached. For a multi-system configuration, the
-[PopDistStrategy](https://docs.graphcore.ai/projects/tensorflow-user-guide/en/3.0.0/tensorflow/api.html#tensorflow.python.ipu.horovod.popdist_strategy.PopDistStrategy)
+[PopDistStrategy](https://docs.graphcore.ai/projects/tensorflow-user-guide/en/3.1.0/tensorflow/api.html#tensorflow.python.ipu.horovod.popdist_strategy.PopDistStrategy)
 should be used, in conjunction with our PopDist library.
 
 > To see an example of how to distribute training and inference over multiple
@@ -175,7 +168,7 @@ Another way to speed up the training of a model is through replication. This
 process involves copying the model on each of multiple IPUs, updating the
 parameters of the model on all IPUs after each forward and backward pass. To
 learn more about this process, head over to our documentation on [graph
-replication](https://docs.graphcore.ai/projects/memory-performance-optimisation/en/3.0.0/optimising-performance.html#graph-replication).
+replication](https://docs.graphcore.ai/projects/memory-performance-optimisation/en/3.1.0/optimising-performance.html#graph-replication).
 
 > To see how this process can be implemented, take a look at the Replication
 section of our [TensorFlow 2 Keras
