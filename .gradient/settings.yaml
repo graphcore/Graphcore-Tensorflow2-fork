@@ -1,4 +1,7 @@
 integrations:
+  gcl:
+    type: dataset
+    ref: paperspace/ds7me5hgjbfht6q:8ngwr2a
   ogbn_arxiv:
     type: dataset
     ref: paperspace/dse7nwrf3tr7cl8:a27q61l

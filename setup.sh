@@ -40,6 +40,11 @@ export OGB_DATASETS_DIR="${DATASETS_DIR}/ogb_lsc_pcqm4mv2/datasets"
 export OGB_CHECKPOINT_DIR="${CHECKPOINT_DIR}/ogb_lsc_pcqm4mv2/checkpoints"
 export OGB_SUBMISSION_CODE="./pcqm4mv2_submission"
 
+# Logger specific vars
+export TIER_TYPE=$(python .gradient/check_tier.py)
+export FIREHOSE_STREAM_NAME="paperspacenotebook_production"
+export GCLOGGER_CONFIG="${PUBLIC_DATASETS_DIR}/gcl"
+
 echo "Graphcore setup - Spawning dataset preparation process"
 nohup /notebooks/.gradient/prepare-datasets.sh ${@} & tail -f nohup.out &
 
